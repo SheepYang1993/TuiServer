@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#ff7291</color>
+    <color name="colorPrimaryDark">#ff7291</color>
+    <color name="colorAccent">#ff7291</color>
+    <color name="split_line">#d9d9d9d9</color>
+    <color name="fab_normal">#ff7291</color>
+    <color name="fab_pressed">#ff3763</color>
+    <color name="fab_ripple">#ff3763</color>
+</resources>
