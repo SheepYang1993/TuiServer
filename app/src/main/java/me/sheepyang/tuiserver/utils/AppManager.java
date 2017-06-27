@@ -14,19 +14,20 @@ public class AppManager {
     // Activity栈
     private static Stack<Activity> activityStack;
     // 单例模式
-    private static AppManager instance;
+    private static AppManager mInstance;
 
     private AppManager() {
+
     }
 
-    /**
-     * 单一实例
-     */
     public static AppManager getAppManager() {
-        if (instance == null) {
-            instance = new AppManager();
+        if (mInstance == null) {
+            synchronized (AppManager.class) {
+                if (mInstance == null)
+                    mInstance = new AppManager();
+            }
         }
-        return instance;
+        return mInstance;
     }
 
     /**
@@ -34,7 +35,10 @@ public class AppManager {
      */
     public void addActivity(Activity activity) {
         if (activityStack == null) {
-            activityStack = new Stack<Activity>();
+            synchronized (Stack.class) {
+                if (activityStack == null)
+                    activityStack = new Stack<>();
+            }
         }
         activityStack.add(activity);
     }
@@ -95,10 +99,12 @@ public class AppManager {
     public void finishAllActivity() {
         for (int i = 0; i < activityStack.size(); i++) {
             if (null != activityStack.get(i)) {
-                activityStack.get(i).finish();
+                finishActivity(activityStack.get(i));
             }
         }
         activityStack.clear();
+        activityStack = null;
+        mInstance = null;
     }
 
     /**
@@ -120,7 +126,7 @@ public class AppManager {
     public void AppExit(Context context) {
         try {
             finishAllActivity();
-            ActivityManager activityMgr = (ActivityManager) context
+            ActivityManager activityMgr = (ActivityManager) context.getApplicationContext()
                     .getSystemService(Context.ACTIVITY_SERVICE);
             activityMgr.killBackgroundProcesses(context.getPackageName());
             System.exit(0);

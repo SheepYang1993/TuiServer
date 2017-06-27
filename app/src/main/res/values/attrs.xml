@@ -6,6 +6,7 @@
         <attr name="qb_right_text_size" format="dimension"/>
         <attr name="qb_right_text_color" format="color"/>
         <attr name="qb_right_drawable" format="reference"/>
+        <attr name="qb_is_back" format="boolean"/>
         <attr name="qb_right_background" format="reference"/>
     </declare-styleable>
 </resources>

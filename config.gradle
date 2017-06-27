@@ -49,6 +49,7 @@ ext {
             "numberprogressbar"        : "com.daimajia.numberprogressbar:library:1.2@aar",
             "nineoldandroids"          : "com.nineoldandroids:library:2.4.0",
             "paginate"                 : "com.github.markomilos:paginate:0.5.1",
+            "tkrefreshlayout"                 : "com.lcodecorex:tkrefreshlayout:1.0.7",
             "banner"                          : "com.youth.banner:banner:1.4.9",
             "base-recyclerview-adapter-helper": "com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.15",
             "vlayout"                  : "com.alibaba.android:vlayout:1.0.6@aar",

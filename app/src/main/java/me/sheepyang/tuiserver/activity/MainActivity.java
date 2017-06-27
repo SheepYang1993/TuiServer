@@ -12,14 +12,16 @@ import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
+import com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import me.sheepyang.tuiserver.R;
+import me.sheepyang.tuiserver.activity.adv.ModifyAdvActivity;
+import me.sheepyang.tuiserver.activity.adv.AdvSettingActivity;
+import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
 import me.sheepyang.tuiserver.adapter.SettingAdapter;
 import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.entity.SettingEntity;
@@ -27,25 +29,24 @@ import me.sheepyang.tuiserver.utils.AppManager;
 import me.sheepyang.tuiserver.utils.AppUtil;
 import me.sheepyang.tuiserver.utils.UiUtils;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseRefreshActivity {
     private static final int REQUEST_READ_PHONE_STATE = 200;//请求读取手机状态权限
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
     private Handler mHandler;
     private long exitTime = 500;
 
     @Override
-    public int setLayoutId() {
-        return R.layout.activity_main;
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setBarTitle("推-控制台");
+        setBarBack(false);
         this.mHandler = new Handler();
         initListener();
         initData();
+    }
+
+    @Override
+    public RecyclerView.Adapter initAdapter() {
+        return null;
     }
 
     private void initData() {
@@ -92,23 +93,29 @@ public class MainActivity extends BaseActivity {
                 .start();
     }
 
+    @Override
+    public void initRefreshLayout(TwinklingRefreshLayout refreshLayout) {
+        super.initRefreshLayout(refreshLayout);
+        refreshLayout.setEnableRefresh(false);
+        refreshLayout.setEnableLoadmore(false);
+    }
+
     private void getPermissionSuccess() {
         AppUtil.initBmob(mActivity, Constants.BMOB_APP_ID, "bmob");
         setAdapter(new SettingAdapter(getMainList()));
+    }
+
+    @Override
+    public void initRecyclerView() {
+        //添加分割线
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mActivity, DividerItemDecoration.VERTICAL));
+        UiUtils.configRecycleView(mRecyclerView, new LinearLayoutManager(mActivity));
     }
 
     private void exitApp(long delayMillis) {
         mHandler.postDelayed(() -> {
             AppManager.getAppManager().AppExit(getApplicationContext());
         }, delayMillis);
-    }
-
-    private void setAdapter(SettingAdapter adapter) {
-        mAdapter = adapter;
-        mRecyclerView.setAdapter(mAdapter);
-        //添加分割线
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        UiUtils.configRecycleView(mRecyclerView, new LinearLayoutManager(this));
     }
 
     @Override
@@ -121,19 +128,19 @@ public class MainActivity extends BaseActivity {
     private List<SettingEntity> getMainList() {
         List<SettingEntity> list = new ArrayList<>();
         list.add(new SettingEntity("广告图片设置", AdvSettingActivity.class));
-        list.add(new SettingEntity("广告图片设置1", AddAdvActivity.class));
-        list.add(new SettingEntity("广告图片设置2", AddAdvActivity.class));
-        list.add(new SettingEntity("广告图片设置3", AddAdvActivity.class));
-        list.add(new SettingEntity("广告图片设置4", AddAdvActivity.class));
-        list.add(new SettingEntity("广告图片设置5", AddAdvActivity.class));
-        list.add(new SettingEntity("广告图片设置5", AddAdvActivity.class));
-        list.add(new SettingEntity("广告图片设置5", AddAdvActivity.class));
-        list.add(new SettingEntity("广告图片设置5", AddAdvActivity.class));
-        list.add(new SettingEntity("广告图片设置5", AddAdvActivity.class));
-        list.add(new SettingEntity("广告图片设置5", AddAdvActivity.class));
-        list.add(new SettingEntity("广告图片设置5", AddAdvActivity.class));
-        list.add(new SettingEntity("广告图片设置5", AddAdvActivity.class));
-        list.add(new SettingEntity("广告图片设置5", AddAdvActivity.class));
+        list.add(new SettingEntity("广告图片设置1", ModifyAdvActivity.class));
+        list.add(new SettingEntity("广告图片设置2", ModifyAdvActivity.class));
+        list.add(new SettingEntity("广告图片设置3", ModifyAdvActivity.class));
+        list.add(new SettingEntity("广告图片设置4", ModifyAdvActivity.class));
+        list.add(new SettingEntity("广告图片设置5", ModifyAdvActivity.class));
+        list.add(new SettingEntity("广告图片设置5", ModifyAdvActivity.class));
+        list.add(new SettingEntity("广告图片设置5", ModifyAdvActivity.class));
+        list.add(new SettingEntity("广告图片设置5", ModifyAdvActivity.class));
+        list.add(new SettingEntity("广告图片设置5", ModifyAdvActivity.class));
+        list.add(new SettingEntity("广告图片设置5", ModifyAdvActivity.class));
+        list.add(new SettingEntity("广告图片设置5", ModifyAdvActivity.class));
+        list.add(new SettingEntity("广告图片设置5", ModifyAdvActivity.class));
+        list.add(new SettingEntity("广告图片设置5", ModifyAdvActivity.class));
         return list;
     }
 
@@ -146,6 +153,16 @@ public class MainActivity extends BaseActivity {
                     startActivity(new Intent(mActivity, clazz));
             }
         });
+    }
+
+    @Override
+    protected void startLoadMore(TwinklingRefreshLayout refreshLayout) {
+        refreshLayout.finishLoadmore();
+    }
+
+    @Override
+    protected void startRefresh(TwinklingRefreshLayout refreshLayout) {
+        refreshLayout.finishRefreshing();
     }
 
     @Override

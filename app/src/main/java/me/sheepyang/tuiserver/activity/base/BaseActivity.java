@@ -1,4 +1,4 @@
-package me.sheepyang.tuiserver.activity;
+package me.sheepyang.tuiserver.activity.base;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import com.blankj.utilcode.util.ToastUtils;
 
 import butterknife.ButterKnife;
 import me.sheepyang.tuiserver.utils.AppManager;
+import me.sheepyang.tuiserver.widget.dialog.LoadingDialog;
 
 /**
  * Created by SheepYang on 2017-06-26.
@@ -17,6 +18,7 @@ import me.sheepyang.tuiserver.utils.AppManager;
 
 public abstract class BaseActivity extends AppCompatActivity {
     public Activity mActivity;
+    public LoadingDialog mDialog;
 
     public abstract
     @LayoutRes
@@ -33,5 +35,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void showMessage(CharSequence charSequence) {
         ToastUtils.showShortToast(charSequence);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mActivity = null;
+        mDialog = null;
+        super.onDestroy();
     }
 }

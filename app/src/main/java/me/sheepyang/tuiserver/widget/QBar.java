@@ -25,6 +25,7 @@ import me.sheepyang.tuiserver.R;
  */
 
 public class QBar extends RelativeLayout {
+    private boolean mIsBack;
     private int mRightBackgroundId;
     private float mRightTextSize;
     @BindView(R.id.iv_right)
@@ -62,6 +63,7 @@ public class QBar extends RelativeLayout {
         try {
             mTitle = a.getString(R.styleable.QBar_qb_title);
             mRightText = a.getString(R.styleable.QBar_qb_right_text);
+            mIsBack = a.getBoolean(R.styleable.QBar_qb_is_back, false);
             mRightDrawableId = a.getResourceId(R.styleable.QBar_qb_right_drawable, -1);
             mRightBackgroundId = a.getResourceId(R.styleable.QBar_qb_right_background, -1);
             mRightTextSize = SizeUtils.px2sp(a.getDimensionPixelSize(R.styleable.QBar_qb_right_text_size, SizeUtils.sp2px(17)));
@@ -107,12 +109,11 @@ public class QBar extends RelativeLayout {
             mLlRight.setVisibility(GONE);
         }
 
-        mIvLeft.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mContext instanceof Activity) {
-                    ((Activity) mContext).onBackPressed();
-                }
+        mIvLeft.setVisibility(mIsBack ? View.VISIBLE : View.GONE);
+        mIvLeft.setOnClickListener((View v) -> {
+            if (mContext instanceof Activity) {
+                ((Activity) mContext).onBackPressed();
+
             }
         });
         mLlRight.setOnClickListener(new OnClickListener() {
@@ -125,7 +126,32 @@ public class QBar extends RelativeLayout {
         });
     }
 
+    public void setRightText(String text) {
+        mRightText = text;
+        if (mTvRight != null && !TextUtils.isEmpty(mRightText)) {
+            mTvRight.setText(mRightText);
+            mLlRight.setVisibility(VISIBLE);
+//            mTvRight.setVisibility(VISIBLE);
+        }
+    }
+
     public void setOnRightClickListener(OnClickListener onRightClickListener) {
         mOnRightClickListener = onRightClickListener;
+    }
+
+    public String getTitle() {
+        return mTitle;
+    }
+
+    public void setTitle(String title) {
+        mTitle = title;
+        if (mTvTitle != null && !TextUtils.isEmpty(mTitle)) {
+            mTvTitle.setText(mTitle);
+        }
+    }
+
+    public void setBack(boolean isBack) {
+        mIsBack = isBack;
+        mIvLeft.setVisibility(mIsBack ? View.VISIBLE : View.GONE);
     }
 }

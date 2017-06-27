@@ -32,9 +32,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.AdvSettingActivity">
+        <activity android:name=".activity.adv.AdvSettingActivity">
         </activity>
-        <activity android:name=".activity.AddAdvActivity">
+        <activity android:name=".activity.adv.ModifyAdvActivity">
+        </activity>
+        <activity android:name=".activity.base.BaseRefreshActivity">
         </activity>
     </application>
 
