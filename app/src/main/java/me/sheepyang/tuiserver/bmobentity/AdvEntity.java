@@ -10,9 +10,21 @@ import cn.bmob.v3.datatype.BmobFile;
 public class AdvEntity extends BmobObject {
     private String title;//标题
     private String desc;//描述
-    private Integer type;//类型
+    private Integer habit;//喜好 0全部；1男生；2女生
+    private Integer type;//类型 0置空；1外链；2模特
+    private String tempId;//可存放对象ID
+    private String tempUrl;//可存放url
     private BmobFile pic;//广告图片
     private String picUrl;//图片路径
+    private Boolean isShow;
+
+    public Boolean getShow() {
+        return isShow;
+    }
+
+    public void setShow(Boolean show) {
+        isShow = show;
+    }
 
     public String getTitle() {
         return title;
@@ -52,5 +64,29 @@ public class AdvEntity extends BmobObject {
 
     public void setPicUrl(String picUrl) {
         this.picUrl = picUrl;
+    }
+
+    public Integer getHabit() {
+        return habit;
+    }
+
+    public void setHabit(Integer habit) {
+        this.habit = habit;
+    }
+
+    public String getTempId() {
+        return tempId;
+    }
+
+    public void setTempId(String tempId) {
+        this.tempId = tempId;
+    }
+
+    public String getTempUrl() {
+        return tempUrl;
+    }
+
+    public void setTempUrl(String tempUrl) {
+        this.tempUrl = tempUrl;
     }
 }

@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="me.sheepyang.tuiserver">
 
+    <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <!-- 允许联网 -->
@@ -25,19 +26,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar.FullScreen">
-        <activity android:name=".activity.MainActivity">
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+
+        <activity
+            android:name=".activity.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.adv.AdvSettingActivity">
-        </activity>
-        <activity android:name=".activity.adv.ModifyAdvActivity">
-        </activity>
-        <activity android:name=".activity.base.BaseRefreshActivity">
-        </activity>
+        <activity
+            android:name=".activity.adv.AdvSettingActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.adv.ModifyAdvActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

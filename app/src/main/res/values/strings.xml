@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TuiServer</string>
+    <string name="not_open">暂未开通该功能</string>
 </resources>

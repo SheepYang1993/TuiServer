@@ -7,4 +7,5 @@ package me.sheepyang.tuiserver.app;
 public class Constants {
     public static final String BMOB_APP_ID = "9dbbc141661fce75055cd43eec71d8f4";
     public static final String TAG = "SheepYang";
+    public static final String IMAGE_FILE_PATH = "/TuiServer";
 }
