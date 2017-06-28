@@ -2,8 +2,11 @@ package me.sheepyang.tuiserver.adapter;
 
 import android.support.annotation.Nullable;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.blankj.utilcode.util.ScreenUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
@@ -17,30 +20,27 @@ import me.sheepyang.tuiserver.bmobentity.AdvEntity;
  */
 
 public class AdvAdapter extends BaseQuickAdapter<AdvEntity, BaseViewHolder> {
+    private RequestOptions mOptions;
     private int mScreenWidth;
 
     public AdvAdapter(@Nullable List<AdvEntity> data) {
         super(R.layout.adapter_item_adv, data);
         mScreenWidth = ScreenUtils.getScreenWidth();
+        mOptions = new RequestOptions()
+                .centerCrop()
+                .placeholder(R.drawable.adv_placeholder);
     }
 
     @Override
     protected void convert(BaseViewHolder helper, AdvEntity item) {
-        //可以在任何可以拿到Application的地方,拿到AppComponent,从而得到用Dagger管理的单例对象
-//        AppComponent appComponent = ((BaseApplication) mContext.getApplicationContext())
-//                .getAppComponent();
-//        ImageLoader imageLoader = appComponent.imageLoader();
         ViewGroup.LayoutParams lp = helper.getView(R.id.iv_adv).getLayoutParams();
         lp.width = mScreenWidth;
         lp.height = mScreenWidth / 3;
         helper.getView(R.id.iv_adv).setLayoutParams(lp);
 
-//        imageLoader.loadImage(appComponent.appManager().getCurrentActivity() == null
-//                        ? appComponent.application() : appComponent.appManager().getCurrentActivity(),
-//                GlideImageConfig
-//                        .builder()
-//                        .url(item.getPic() != null ? item.getPic().getFileUrl() : "")
-//                        .imageView(helper.getView(R.id.iv_adv))
-//                        .build());
+        Glide.with(mContext)
+                .load(item.getPic().getFileUrl())
+                .apply(mOptions)
+                .into((ImageView) helper.getView(R.id.iv_adv));
     }
 }

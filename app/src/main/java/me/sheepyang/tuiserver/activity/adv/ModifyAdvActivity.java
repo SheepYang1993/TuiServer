@@ -99,7 +99,7 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
     private void initView() {
         ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) mIvAdv.getLayoutParams();
         lp.width = ScreenUtils.getScreenWidth(mActivity);
-        lp.height = lp.width / 2;
+        lp.height = lp.width / 3;
         mIvAdv.setLayoutParams(lp);
     }
 
@@ -292,7 +292,7 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                 .theme(R.style.mypicture_default_style)//主题样式(不设置为默认样式) 也可参考demo values/styles下 例如：R.style.picture.white.style
                 .maxSelectNum(1)// 最大图片选择数量 int
                 .minSelectNum(1)// 最小选择数量 int
-                .imageSpanCount(4)// 每行显示个数 int
+                .imageSpanCount(3)// 每行显示个数 int
                 .selectionMode(PictureConfig.SINGLE)// 多选 or 单选 PictureConfig.MULTIPLE or PictureConfig.SINGLE
                 .previewImage(true)// 是否可预览图片 true or false
                 .previewVideo(false)// 是否可预览视频 true or false
@@ -306,7 +306,7 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                 .compress(true)// 是否压缩 true or false
                 .compressMode(LUBAN_COMPRESS_MODE)//系统自带 or 鲁班压缩 PictureConfig.SYSTEM_COMPRESS_MODE or LUBAN_COMPRESS_MODE
 //                        .glideOverride()// int glide 加载宽高，越小图片列表越流畅，但会影响列表图片浏览的清晰度
-                .withAspectRatio(2, 1)// int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
+                .withAspectRatio(3, 1)// int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
                 .hideBottomControls(true)// 是否显示uCrop工具栏，默认不显示 true or false
                 .isGif(false)// 是否显示gif图片 true or false
                 .freeStyleCropEnabled(false)// 裁剪框是否可拖拽 true or false
@@ -318,8 +318,8 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                 .previewEggs(true)// 预览图片时 是否增强左右滑动图片体验(图片滑动一半即可看到上一张是否选中) true or false
 //                        .cropCompressQuality()// 裁剪压缩质量 默认90 int
                 .compressMaxKB(300)//压缩最大值kb compressGrade()为Luban.CUSTOM_GEAR有效 int
-                .compressWH(1000, 500) // 压缩宽高比 compressGrade()为Luban.CUSTOM_GEAR有效  int
-                .cropWH(1000, 500)// 裁剪宽高比，设置如果大于图片本身宽高则无效 int
+                .compressWH(1200, 400) // 压缩宽高比 compressGrade()为Luban.CUSTOM_GEAR有效  int
+                .cropWH(1200, 400)// 裁剪宽高比，设置如果大于图片本身宽高则无效 int
                 .rotateEnabled(true) // 裁剪是否可旋转图片 true or false
                 .scaleEnabled(true)// 裁剪是否可放大缩小图片 true or false
 //                        .videoQuality()// 视频录制质量 0 or 1 int

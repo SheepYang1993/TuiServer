@@ -5,6 +5,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.lcodecore.tkrefreshlayout.IBottomView;
 import com.lcodecore.tkrefreshlayout.IHeaderView;
 import com.lcodecore.tkrefreshlayout.RefreshListenerAdapter;
@@ -25,7 +26,7 @@ public abstract class BaseRefreshActivity extends BaseActivity {
     protected RecyclerView mRecyclerView;
     @BindView(R.id.refresh_layout)
     protected TwinklingRefreshLayout mRefreshLayout;
-    private RecyclerView.Adapter mAdapter;
+    public BaseQuickAdapter mAdapter;
 
     @Override
     public int setLayoutId() {
@@ -86,7 +87,7 @@ public abstract class BaseRefreshActivity extends BaseActivity {
         setRefreshHeadBottomView(refreshLayout);
     }
 
-    public void setAdapter(RecyclerView.Adapter adapter) {
+    public void setAdapter(BaseQuickAdapter adapter) {
         mAdapter = adapter;
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -96,7 +97,7 @@ public abstract class BaseRefreshActivity extends BaseActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
     }
 
-    public abstract RecyclerView.Adapter initAdapter();
+    public abstract BaseQuickAdapter initAdapter();
 
     public void setRefreshHeadBottomView(TwinklingRefreshLayout refreshLayout) {
         setRefreshHeadBottomView(refreshLayout, null, null);

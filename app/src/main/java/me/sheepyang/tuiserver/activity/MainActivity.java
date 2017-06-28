@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -19,8 +18,8 @@ import com.yanzhenjie.permission.PermissionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.sheepyang.tuiserver.activity.adv.ModifyAdvActivity;
 import me.sheepyang.tuiserver.activity.adv.AdvSettingActivity;
+import me.sheepyang.tuiserver.activity.adv.ModifyAdvActivity;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
 import me.sheepyang.tuiserver.adapter.SettingAdapter;
 import me.sheepyang.tuiserver.app.Constants;
@@ -45,7 +44,7 @@ public class MainActivity extends BaseRefreshActivity {
     }
 
     @Override
-    public RecyclerView.Adapter initAdapter() {
+    public BaseQuickAdapter initAdapter() {
         return null;
     }
 
