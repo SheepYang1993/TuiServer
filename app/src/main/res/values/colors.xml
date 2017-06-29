@@ -7,4 +7,5 @@
     <color name="fab_normal">#ff7291</color>
     <color name="fab_pressed">#ff3763</color>
     <color name="fab_ripple">#ff3763</color>
+    <color name="black_half_transparent">#af000000</color>
 </resources>

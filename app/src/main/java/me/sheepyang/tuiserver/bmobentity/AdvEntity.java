@@ -1,5 +1,7 @@
 package me.sheepyang.tuiserver.bmobentity;
 
+import java.io.Serializable;
+
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.datatype.BmobFile;
 
@@ -7,7 +9,7 @@ import cn.bmob.v3.datatype.BmobFile;
  * Created by SheepYang on 2017-06-21.
  */
 
-public class AdvEntity extends BmobObject {
+public class AdvEntity extends BmobObject implements Serializable {
     private String title;//标题
     private String desc;//描述
     private Integer habit;//喜好 0全部；1男生；2女生

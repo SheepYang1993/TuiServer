@@ -2,4 +2,5 @@
     <string name="app_name">TuiServer</string>
     <string name="not_open">暂未开通该功能</string>
     <string name="no_data">暂无数据</string>
+    <string name="no_more_data">没有更多数据啦~</string>
 </resources>

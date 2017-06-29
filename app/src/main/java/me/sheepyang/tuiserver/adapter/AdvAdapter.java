@@ -1,6 +1,7 @@
 package me.sheepyang.tuiserver.adapter;
 
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -27,8 +28,7 @@ public class AdvAdapter extends BaseQuickAdapter<AdvEntity, BaseViewHolder> {
         super(R.layout.adapter_item_adv, data);
         mScreenWidth = ScreenUtils.getScreenWidth();
         mOptions = new RequestOptions()
-                .centerCrop()
-                .placeholder(R.drawable.adv_placeholder);
+                .centerCrop();
     }
 
     @Override
@@ -38,9 +38,17 @@ public class AdvAdapter extends BaseQuickAdapter<AdvEntity, BaseViewHolder> {
         lp.height = mScreenWidth / 3;
         helper.getView(R.id.iv_adv).setLayoutParams(lp);
 
-        Glide.with(mContext)
-                .load(item.getPic().getFileUrl())
-                .apply(mOptions)
-                .into((ImageView) helper.getView(R.id.iv_adv));
+        if (!TextUtils.isEmpty(item.getTitle())) {
+            helper.setText(R.id.tv_title, item.getTitle());
+        }
+        helper.setVisible(R.id.tv_title, !TextUtils.isEmpty(item.getTitle()));
+        helper.setText(R.id.tv_is_show, item.getShow() ? "正在展示" : "未展示");
+
+        if (item.getPic() != null && !TextUtils.isEmpty(item.getPic().getFileUrl())) {
+            Glide.with(mContext)
+                    .load(item.getPic().getFileUrl())
+                    .apply(mOptions)
+                    .into((ImageView) helper.getView(R.id.iv_adv));
+        }
     }
 }

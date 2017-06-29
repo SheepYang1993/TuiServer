@@ -39,7 +39,6 @@ public class MainActivity extends BaseRefreshActivity {
         setBarTitle("推-控制台");
         setBarBack(false);
         this.mHandler = new Handler();
-        initListener();
         initData();
     }
 
@@ -143,7 +142,9 @@ public class MainActivity extends BaseRefreshActivity {
         return list;
     }
 
-    private void initListener() {
+    @Override
+    public void initListener() {
+        super.initListener();
         mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {

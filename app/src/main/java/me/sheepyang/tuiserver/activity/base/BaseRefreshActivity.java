@@ -44,8 +44,8 @@ public abstract class BaseRefreshActivity extends BaseActivity {
         mQBar.setBack(isBack);
     }
 
-    public void showDialog() {
-        mDialog = new LoadingDialog(mActivity, "玩命加载中...");
+    public void showDialog(String msg) {
+        mDialog = new LoadingDialog(mActivity, msg);
         mDialog.show();
     }
 
@@ -53,7 +53,7 @@ public abstract class BaseRefreshActivity extends BaseActivity {
         mDialog.close();
     }
 
-    private void initListener() {
+    public void initListener() {
         mRefreshLayout.setOnRefreshListener(new RefreshListenerAdapter() {
             @Override
             public void onRefresh(TwinklingRefreshLayout refreshLayout) {

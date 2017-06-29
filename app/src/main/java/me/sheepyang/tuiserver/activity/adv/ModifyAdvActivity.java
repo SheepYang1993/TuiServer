@@ -1,9 +1,11 @@
 package me.sheepyang.tuiserver.activity.adv;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +37,7 @@ import butterknife.OnClick;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseActivity;
@@ -48,6 +51,10 @@ import static com.luck.picture.lib.config.PictureConfig.LUBAN_COMPRESS_MODE;
 
 public class ModifyAdvActivity extends BaseActivity implements View.OnClickListener {
 
+    public static final String TYPE_MODIFY = "type_modify";
+    public static final String TYPE_ADD = "type_add";
+    public static final String TYPE = "type";
+    public static final String ENTITY_DATA = "entity_data";
     @BindView(R.id.QBar)
     QBar mQBar;
     @BindView(R.id.edt_title)
@@ -83,6 +90,10 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
     @BindView(R.id.tv_web_address)
     TextView mTvWebAddress;
     private List<LocalMedia> mImageSelectList = new ArrayList<>();
+    private String mType;
+    private AdvEntity mAdvEntity;
+    private RequestOptions mOptions;
+    private boolean mIsDeltedPic;
 
     @Override
     public int setLayoutId() {
@@ -92,11 +103,108 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initIntent(getIntent());
         initView();
         initListener();
+        initData();
+    }
+
+    private void initData() {
+        if (mAdvEntity != null) {
+            mEdtTitle.setText(mAdvEntity.getTitle());
+            mEdtDesc.setText(mAdvEntity.getDesc());
+            switch (mAdvEntity.getHabit()) {
+                case 0://全部
+                    mRgHabit.check(R.id.rbtn_habit_all);
+                    break;
+                case 1://男生
+                    mRgHabit.check(R.id.rbtn_habit_man);
+                    break;
+                case 2://女生
+                    mRgHabit.check(R.id.rbtn_habit_woman);
+                    break;
+                default://全部
+                    mRgHabit.check(R.id.rbtn_habit_all);
+                    break;
+            }
+            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) mCbIsShow.getLayoutParams();
+            switch (mAdvEntity.getType()) {
+                case 0://置空
+                    mRgType.check(R.id.rbtn_type_none);
+                    mBtnSelectModel.setVisibility(View.GONE);
+                    mTvWebAddress.setVisibility(View.GONE);
+                    mEdtWebAddress.setVisibility(View.GONE);
+                    lp.topToBottom = R.id.rg_type;
+                    mCbIsShow.setLayoutParams(lp);
+                    break;
+                case 1://外链
+                    mRgType.check(R.id.rbtn_type_web);
+                    mEdtWebAddress.setText(mAdvEntity.getTempUrl());
+                    mBtnSelectModel.setVisibility(View.GONE);
+                    mTvWebAddress.setVisibility(View.VISIBLE);
+                    mEdtWebAddress.setVisibility(View.VISIBLE);
+                    lp.topToBottom = R.id.edt_web_address;
+                    mCbIsShow.setLayoutParams(lp);
+                    break;
+                case 2://模特
+                    mRgType.check(R.id.rbtn_type_model);
+                    mBtnSelectModel.setVisibility(View.VISIBLE);
+                    mTvWebAddress.setVisibility(View.GONE);
+                    mEdtWebAddress.setVisibility(View.GONE);
+                    lp.topToBottom = R.id.btn_select_model;
+                    mCbIsShow.setLayoutParams(lp);
+                    break;
+                default://置空
+                    mRgType.check(R.id.rbtn_type_none);
+                    mBtnSelectModel.setVisibility(View.GONE);
+                    mTvWebAddress.setVisibility(View.GONE);
+                    mEdtWebAddress.setVisibility(View.GONE);
+                    lp.topToBottom = R.id.rg_type;
+                    mCbIsShow.setLayoutParams(lp);
+                    break;
+            }
+            mCbIsShow.setChecked(mAdvEntity.getShow());
+
+            if (mAdvEntity.getPic() != null && !TextUtils.isEmpty(mAdvEntity.getPic().getFileUrl())) {
+                Glide.with(mActivity)
+                        .load(mAdvEntity.getPic().getFileUrl())
+                        .apply(mOptions)
+                        .into(mIvAdv);
+            }
+        }
+    }
+
+    private void initIntent(Intent intent) {
+        mType = intent.getStringExtra(TYPE);
+        if (TextUtils.isEmpty(mType)) {
+            mType = TYPE_ADD;
+        }
+        if (TYPE_MODIFY.equals(mType)) {
+            mAdvEntity = (AdvEntity) intent.getSerializableExtra(ENTITY_DATA);
+            if (mAdvEntity == null) {
+                showMessage("找不到广告信息");
+                onBackPressed();
+                return;
+            }
+            KLog.i(Constants.TAG
+                    , "标题:" + mAdvEntity.getTitle()
+                    , "描述:" + mAdvEntity.getDesc()
+                    , "针对:" + mAdvEntity.getHabit()
+                    , "类型:" + mAdvEntity.getType()
+                    , "外链地址:" + mAdvEntity.getTempUrl()
+//                , "模特id:" + mEdtTitle.getText().toString()
+                    , "是否立即显示:" + mAdvEntity.getShow()
+//                , "图片路径:" + entity.getPic().getFileUrl()
+            );
+            mQBar.setTitle("修改广告");
+            mQBar.setRightText("修改");
+        }
     }
 
     private void initView() {
+        mOptions = new RequestOptions()
+                .centerCrop();
+
         ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) mIvAdv.getLayoutParams();
         lp.width = ScreenUtils.getScreenWidth(mActivity);
         lp.height = lp.width / 3;
@@ -114,6 +222,47 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void initListener() {
+        mIvAdv.setOnLongClickListener((View v) -> {
+            if (mImageSelectList != null && mImageSelectList.size() > 0) {
+                String msg = "";
+                if (!TextUtils.isEmpty(mEdtTitle.getText().toString())) {
+                    msg = mEdtTitle.getText().toString();
+                } else if (mAdvEntity != null) {
+                    msg = mAdvEntity.getTitle();
+                }
+                new AlertDialog.Builder(mActivity)
+                        .setMessage("确定要删除 " + msg + " 这张广告图片吗？")
+                        .setPositiveButton("删除", (DialogInterface dialog, int which) -> {
+                            showDialog("正在删除图片");
+                            mImageSelectList = new ArrayList<LocalMedia>();
+                            Glide.with(mActivity)
+                                    .load("")
+                                    .apply(mOptions)
+                                    .into(mIvAdv);
+                            closeDialog();
+                        })
+                        .setNegativeButton("取消", (DialogInterface dialog, int which) -> {
+                            dialog.dismiss();
+                        })
+                        .show();
+            } else if (mAdvEntity != null && mAdvEntity.getPic() != null && !TextUtils.isEmpty(mAdvEntity.getPic().getFileUrl())) {
+                new AlertDialog.Builder(mActivity)
+                        .setMessage("确定要删除 " + mAdvEntity.getTitle() + " 这张广告图片吗？")
+                        .setPositiveButton("删除", (DialogInterface dialog, int which) -> {
+                            mAdvEntity.setPic(null);
+                            mIsDeltedPic = true;
+                            Glide.with(mActivity)
+                                    .load("")
+                                    .apply(mOptions)
+                                    .into(mIvAdv);
+                        })
+                        .setNegativeButton("取消", (DialogInterface dialog, int which) -> {
+                            dialog.dismiss();
+                        })
+                        .show();
+            }
+            return true;
+        });
         mRgType.setOnCheckedChangeListener((RadioGroup group, @IdRes int checkedId) -> {
             ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) mCbIsShow.getLayoutParams();
             switch (checkedId) {
@@ -142,8 +291,204 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                     break;
             }
         });
-        mQBar.setOnRightClickListener((View v) -> {
-            addAdv();
+        if (TYPE_MODIFY.equals(mType)) {
+            mQBar.setOnRightClickListener((View v) -> {
+                modifyAdv(mAdvEntity);
+            });
+        } else {
+            mQBar.setOnRightClickListener((View v) -> {
+                addAdv();
+            });
+        }
+    }
+
+    private void modifyAdv(AdvEntity entity) {
+        KeyboardUtils.hideSoftInput(mActivity);
+        if (TextUtils.isEmpty(mEdtTitle.getText().toString())) {
+            showMessage("请输入标题");
+            return;
+        }
+        if (TextUtils.isEmpty(mEdtDesc.getText().toString())) {
+            showMessage("请输入描述");
+            return;
+        }
+        entity.setTitle(mEdtTitle.getText().toString());
+        entity.setDesc(mEdtDesc.getText().toString());
+        int habit;//针对
+        switch (mRgHabit.getCheckedRadioButtonId()) {
+            case R.id.rbtn_habit_all://全部
+                habit = 0;
+                break;
+            case R.id.rbtn_habit_man://男生
+                habit = 1;
+                break;
+            case R.id.rbtn_habit_woman://女生
+                habit = 2;
+                break;
+            default:
+                habit = 0;//全部
+                break;
+        }
+        entity.setHabit(habit);
+        int type;//类型
+        switch (mRgType.getCheckedRadioButtonId()) {
+            case R.id.rbtn_type_none://置空
+                type = 0;
+                entity.setTempUrl("");
+                break;
+            case R.id.rbtn_type_web://外链
+                type = 1;
+                if (TextUtils.isEmpty(mEdtWebAddress.getText().toString())) {
+                    showMessage("请输入外链地址");
+                    return;
+                }
+                entity.setTempUrl(mEdtWebAddress.getText().toString());
+                break;
+            case R.id.rbtn_type_model://模特
+                type = 2;
+                entity.setTempUrl("");
+                showMessage("暂未开放模特类型");
+                return;
+            default:
+                type = 0;
+                break;
+        }
+        entity.setType(type);
+        entity.setShow(mCbIsShow.isChecked());
+
+        if (entity.getPic() == null || TextUtils.isEmpty(entity.getPic().getFileUrl())) {
+            // 例如 LocalMedia 里面返回三种path
+            // 1.media.getPath(); 为原图path
+            // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true
+            // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true
+            // 如果裁剪并压缩了，以取压缩路径为准，因为是先裁剪后压缩的
+            if (mImageSelectList != null && mImageSelectList.size() > 0) {
+                LocalMedia media = mImageSelectList.get(0);
+                if (media != null && media.isCompressed()) {
+                    KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
+                    BmobFile bmobFile = new BmobFile(new File(media.getCompressPath()));
+                    entity.setPic(bmobFile);
+                    showDialog("正在上传图片...");
+                    uploadPic(bmobFile, new UploadFileListener() {
+
+                        @Override
+                        public void done(BmobException e) {
+                            if (e == null) {
+                                closeDialog();
+                                //bmobFile.getFileUrl()--返回的上传文件的完整地址
+                                KLog.i(Constants.TAG, "上传文件成功:" + bmobFile.getFileUrl());
+                                updateAdvEntity(entity);
+                            } else {
+                                closeDialog();
+                                BmobExceptionUtil.handler(e);
+                            }
+                        }
+
+                        @Override
+                        public void onProgress(Integer value) {
+                            // 返回的上传进度（百分比）
+                        }
+                    });
+                    return;
+                } else {
+                    showMessage("图片选取失败，请重新选择图片");
+                    mImageSelectList = new ArrayList<>();
+                    return;
+                }
+            }
+            updateAdvEntity(entity);
+        } else {
+            showDialog("正在修改图片...");
+            deleteAdvPic(entity, new UpdateListener() {
+                @Override
+                public void done(BmobException e) {
+                    if (e == null) {
+                        KLog.i(Constants.TAG, "文件删除成功");
+                        //旧广告图删除完，上传新的图片
+
+                        // 例如 LocalMedia 里面返回三种path
+                        // 1.media.getPath(); 为原图path
+                        // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true
+                        // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true
+                        // 如果裁剪并压缩了，以取压缩路径为准，因为是先裁剪后压缩的
+                        if (mImageSelectList != null && mImageSelectList.size() > 0) {
+                            LocalMedia media = mImageSelectList.get(0);
+                            if (media != null && media.isCompressed()) {
+                                KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
+                                BmobFile bmobFile = new BmobFile(new File(media.getCompressPath()));
+                                entity.setPic(bmobFile);
+                                uploadPic(bmobFile, new UploadFileListener() {
+
+                                    @Override
+                                    public void done(BmobException e) {
+                                        if (e == null) {
+                                            closeDialog();
+                                            //bmobFile.getFileUrl()--返回的上传文件的完整地址
+                                            KLog.i(Constants.TAG, "上传文件成功:" + bmobFile.getFileUrl());
+                                            updateAdvEntity(entity);
+                                        } else {
+                                            closeDialog();
+                                            BmobExceptionUtil.handler(e);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onProgress(Integer value) {
+                                        // 返回的上传进度（百分比）
+                                    }
+                                });
+                                return;
+                            } else {
+                                showMessage("图片选取失败，请重新选择图片");
+                                mImageSelectList = new ArrayList<>();
+                                return;
+                            }
+                        } else {
+                            entity.setPic(null);
+                            updateAdvEntity(entity);
+                        }
+                    } else {
+                        closeDialog();
+                        BmobExceptionUtil.handler(e);
+                    }
+                }
+            });
+        }
+    }
+
+    private void deleteAdvPic(AdvEntity entity, UpdateListener listener) {
+        BmobFile file = entity.getPic();
+        if (entity.getPic() != null && !TextUtils.isEmpty(entity.getPic().getUrl())) {
+            file.delete(listener);
+        }
+    }
+
+    private void updateAdvEntity(AdvEntity entity) {
+        KLog.i(Constants.TAG
+                , "标题:" + entity.getTitle()
+                , "描述:" + entity.getDesc()
+                , "针对:" + entity.getHabit()
+                , "类型:" + entity.getType()
+                , "外链地址:" + entity.getTempUrl()
+//                , "模特id:" + mEdtTitle.getText().toString()
+                , "是否立即显示:" + entity.getShow()
+//                , "图片路径:" + entity.getPic().getFileUrl()
+        );
+        showDialog("正在修改广告...");
+        entity.update(new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+
+                closeDialog();
+                if (e == null) {
+                    showMessage("广告修改成功");
+                    setResult(RESULT_OK);
+                    onBackPressed();
+                } else {
+                    closeDialog();
+                    BmobExceptionUtil.handler(e);
+                }
+            }
         });
     }
 
@@ -212,7 +557,7 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                 BmobFile bmobFile = new BmobFile(new File(media.getCompressPath()));
                 entity.setPic(bmobFile);
                 showDialog("正在上传图片...");
-                bmobFile.uploadblock(new UploadFileListener() {
+                uploadPic(bmobFile, new UploadFileListener() {
 
                     @Override
                     public void done(BmobException e) {
@@ -222,6 +567,7 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                             KLog.i(Constants.TAG, "上传文件成功:" + bmobFile.getFileUrl());
                             saveAdvEntity(entity);
                         } else {
+                            closeDialog();
                             BmobExceptionUtil.handler(e);
                         }
                     }
@@ -241,8 +587,11 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
         saveAdvEntity(entity);
     }
 
-    private void saveAdvEntity(AdvEntity entity) {
+    private void uploadPic(BmobFile bmobFile, UploadFileListener listener) {
+        bmobFile.uploadblock(listener);
+    }
 
+    private void saveAdvEntity(AdvEntity entity) {
         KLog.i(Constants.TAG
                 , "标题:" + entity.getTitle()
                 , "描述:" + entity.getDesc()
@@ -263,6 +612,7 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                     setResult(RESULT_OK);
                     onBackPressed();
                 } else {
+                    closeDialog();
                     BmobExceptionUtil.handler(e);
                 }
             }
@@ -345,12 +695,9 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                         LocalMedia media = mImageSelectList.get(0);
                         if (media != null && media.isCompressed()) {
                             KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
-                            RequestOptions options = new RequestOptions()
-                                    .centerCrop()
-                                    .placeholder(R.drawable.adv_placeholder);
                             Glide.with(mActivity)
                                     .load(media.getCompressPath())
-                                    .apply(options)
+                                    .apply(mOptions)
                                     .into(mIvAdv);
                         } else {
                             showMessage("图片选取失败");
