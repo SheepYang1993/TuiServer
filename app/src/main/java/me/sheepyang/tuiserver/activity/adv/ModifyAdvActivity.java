@@ -93,7 +93,6 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
     private String mType;
     private AdvEntity mAdvEntity;
     private RequestOptions mOptions;
-    private boolean mIsDeltedPic;
 
     @Override
     public int setLayoutId() {
@@ -249,8 +248,6 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                 new AlertDialog.Builder(mActivity)
                         .setMessage("确定要删除 " + mAdvEntity.getTitle() + " 这张广告图片吗？")
                         .setPositiveButton("删除", (DialogInterface dialog, int which) -> {
-                            mAdvEntity.setPic(null);
-                            mIsDeltedPic = true;
                             Glide.with(mActivity)
                                     .load("")
                                     .apply(mOptions)
@@ -303,6 +300,7 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void modifyAdv(AdvEntity entity) {
+        KLog.e();
         KeyboardUtils.hideSoftInput(mActivity);
         if (TextUtils.isEmpty(mEdtTitle.getText().toString())) {
             showMessage("请输入标题");
@@ -357,14 +355,17 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
         entity.setShow(mCbIsShow.isChecked());
 
         if (entity.getPic() == null || TextUtils.isEmpty(entity.getPic().getFileUrl())) {
+            KLog.e();
             // 例如 LocalMedia 里面返回三种path
             // 1.media.getPath(); 为原图path
             // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true
             // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true
             // 如果裁剪并压缩了，以取压缩路径为准，因为是先裁剪后压缩的
             if (mImageSelectList != null && mImageSelectList.size() > 0) {
+                KLog.e();
                 LocalMedia media = mImageSelectList.get(0);
                 if (media != null && media.isCompressed()) {
+                    KLog.e();
                     KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
                     BmobFile bmobFile = new BmobFile(new File(media.getCompressPath()));
                     entity.setPic(bmobFile);
@@ -374,6 +375,7 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                         @Override
                         public void done(BmobException e) {
                             if (e == null) {
+                                KLog.e();
                                 closeDialog();
                                 //bmobFile.getFileUrl()--返回的上传文件的完整地址
                                 KLog.i(Constants.TAG, "上传文件成功:" + bmobFile.getFileUrl());
@@ -391,29 +393,35 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                     });
                     return;
                 } else {
+                    KLog.e();
                     showMessage("图片选取失败，请重新选择图片");
                     mImageSelectList = new ArrayList<>();
                     return;
                 }
             }
+            KLog.e();
             updateAdvEntity(entity);
         } else {
             showDialog("正在修改图片...");
+            KLog.e(Constants.TAG, entity.getPic().getFileUrl());
             deleteAdvPic(entity, new UpdateListener() {
                 @Override
                 public void done(BmobException e) {
                     if (e == null) {
+                        KLog.e();
+                        entity.remove("pic");
                         KLog.i(Constants.TAG, "文件删除成功");
                         //旧广告图删除完，上传新的图片
-
                         // 例如 LocalMedia 里面返回三种path
                         // 1.media.getPath(); 为原图path
                         // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true
                         // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true
                         // 如果裁剪并压缩了，以取压缩路径为准，因为是先裁剪后压缩的
                         if (mImageSelectList != null && mImageSelectList.size() > 0) {
+                            KLog.e();
                             LocalMedia media = mImageSelectList.get(0);
                             if (media != null && media.isCompressed()) {
+                                KLog.e();
                                 KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
                                 BmobFile bmobFile = new BmobFile(new File(media.getCompressPath()));
                                 entity.setPic(bmobFile);
@@ -439,16 +447,69 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                                 });
                                 return;
                             } else {
+                                KLog.e();
                                 showMessage("图片选取失败，请重新选择图片");
                                 mImageSelectList = new ArrayList<>();
                                 return;
                             }
                         } else {
-                            entity.setPic(null);
+                            KLog.e();
                             updateAdvEntity(entity);
                         }
                     } else {
                         closeDialog();
+                        KLog.i(e.getErrorCode());
+                        if (151 == e.getErrorCode()) {
+                            KLog.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
+                            entity.remove("pic");
+                            KLog.i(Constants.TAG, "文件删除成功");
+                            //旧广告图删除完，上传新的图片
+                            // 例如 LocalMedia 里面返回三种path
+                            // 1.media.getPath(); 为原图path
+                            // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true
+                            // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true
+                            // 如果裁剪并压缩了，以取压缩路径为准，因为是先裁剪后压缩的
+                            if (mImageSelectList != null && mImageSelectList.size() > 0) {
+                                KLog.e();
+                                LocalMedia media = mImageSelectList.get(0);
+                                if (media != null && media.isCompressed()) {
+                                    KLog.e();
+                                    KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
+                                    BmobFile bmobFile = new BmobFile(new File(media.getCompressPath()));
+                                    entity.setPic(bmobFile);
+                                    uploadPic(bmobFile, new UploadFileListener() {
+
+                                        @Override
+                                        public void done(BmobException e) {
+                                            if (e == null) {
+                                                closeDialog();
+                                                //bmobFile.getFileUrl()--返回的上传文件的完整地址
+                                                KLog.i(Constants.TAG, "上传文件成功:" + bmobFile.getFileUrl());
+                                                updateAdvEntity(entity);
+                                            } else {
+                                                closeDialog();
+                                                BmobExceptionUtil.handler(e);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onProgress(Integer value) {
+                                            // 返回的上传进度（百分比）
+                                        }
+                                    });
+                                    return;
+                                } else {
+                                    KLog.e();
+                                    showMessage("图片选取失败，请重新选择图片");
+                                    mImageSelectList = new ArrayList<>();
+                                    return;
+                                }
+                            } else {
+                                KLog.e();
+                                updateAdvEntity(entity);
+                            }
+                            return;
+                        }
                         BmobExceptionUtil.handler(e);
                     }
                 }
@@ -457,13 +518,16 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void deleteAdvPic(AdvEntity entity, UpdateListener listener) {
-        BmobFile file = entity.getPic();
+        BmobFile file = new BmobFile();
+        file.setUrl(entity.getPic().getUrl());//此url是上传文件成功之后通过bmobFile.getUrl()方法获取的。
+        KLog.i(entity.getPic().getUrl());
         if (entity.getPic() != null && !TextUtils.isEmpty(entity.getPic().getUrl())) {
             file.delete(listener);
         }
     }
 
     private void updateAdvEntity(AdvEntity entity) {
+        KLog.e();
         KLog.i(Constants.TAG
                 , "标题:" + entity.getTitle()
                 , "描述:" + entity.getDesc()

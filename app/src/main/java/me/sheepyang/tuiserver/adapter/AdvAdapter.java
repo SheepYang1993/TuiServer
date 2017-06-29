@@ -49,6 +49,11 @@ public class AdvAdapter extends BaseQuickAdapter<AdvEntity, BaseViewHolder> {
                     .load(item.getPic().getFileUrl())
                     .apply(mOptions)
                     .into((ImageView) helper.getView(R.id.iv_adv));
+        } else {
+            Glide.with(mContext)
+                    .load("")
+                    .apply(mOptions)
+                    .into((ImageView) helper.getView(R.id.iv_adv));
         }
     }
 }
