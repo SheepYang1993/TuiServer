@@ -2,6 +2,7 @@ package me.sheepyang.tuiserver.widget.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -16,6 +17,8 @@ import me.sheepyang.tuiserver.R;
  */
 
 public class LoadingDialog {
+    private TextView mLoadingText;
+    private String mMsg;
     AVLoadingIndicatorView mLoadingView;
     Dialog mLoadingDialog;
 
@@ -28,9 +31,10 @@ public class LoadingDialog {
         // 页面中的LoadingView
         mLoadingView = (AVLoadingIndicatorView) view.findViewById(R.id.lv_circularring);
         // 页面中显示文本
-        TextView loadingText = (TextView) view.findViewById(R.id.loading_text);
+        mLoadingText = (TextView) view.findViewById(R.id.loading_text);
         // 显示文本
-        loadingText.setText(msg);
+        mMsg = msg;
+        mLoadingText.setText(mMsg);
         // 创建自定义样式的Dialog
         mLoadingDialog = new Dialog(context, R.style.loading_dialog);
         // 设置返回键无效
@@ -46,10 +50,26 @@ public class LoadingDialog {
     }
 
     public void close() {
-        if (mLoadingDialog != null) {
+        close(false);
+    }
+
+    public void close(boolean isDestroy) {
+        if (mLoadingDialog != null && mLoadingView != null) {
             mLoadingView.smoothToHide();
             mLoadingDialog.dismiss();
-            mLoadingDialog = null;
+            if (isDestroy) {
+                mLoadingDialog = null;
+                mLoadingView = null;
+            }
+        }
+    }
+
+    public void setMessage(String msg) {
+        if (!TextUtils.isEmpty(msg)) {
+            mMsg = msg;
+            if (mLoadingText != null) {
+                mLoadingText.setText(mMsg);
+            }
         }
     }
 }

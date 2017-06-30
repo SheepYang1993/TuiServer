@@ -13,6 +13,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.chad.library.adapter.base.listener.OnItemLongClickListener;
 import com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout;
+import com.socks.library.KLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ import cn.bmob.v3.listener.UpdateListener;
 import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
 import me.sheepyang.tuiserver.adapter.AdvAdapter;
+import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.bmobentity.AdvEntity;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 
@@ -88,7 +90,12 @@ public class AdvSettingActivity extends BaseRefreshActivity {
                         deleteAdvEntity(entity);
                     } else {
                         closeDialog();
-                        BmobExceptionUtil.handler(e);
+                        if (151 == e.getErrorCode()) {
+                            KLog.i(Constants.TAG, "找不到图片，删除失败");
+                            deleteAdvEntity(entity);
+                        } else {
+                            BmobExceptionUtil.handler(e);
+                        }
                     }
                 }
             });

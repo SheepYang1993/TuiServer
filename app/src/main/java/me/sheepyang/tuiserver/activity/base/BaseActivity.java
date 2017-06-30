@@ -39,8 +39,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (mDialog != null) {
+            mDialog.close();
+            mDialog = null;
+        }
         mActivity = null;
-        mDialog = null;
         AppManager.getAppManager().finishActivity();
         super.onDestroy();
     }
