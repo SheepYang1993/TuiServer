@@ -37,6 +37,16 @@ public abstract class BaseActivity extends AppCompatActivity {
         ToastUtils.showShortToast(charSequence);
     }
 
+
+    public void showDialog(String msg) {
+        mDialog = new LoadingDialog(mActivity, msg);
+        mDialog.show();
+    }
+
+    public void closeDialog() {
+        mDialog.close();
+    }
+
     @Override
     protected void onDestroy() {
         if (mDialog != null) {
