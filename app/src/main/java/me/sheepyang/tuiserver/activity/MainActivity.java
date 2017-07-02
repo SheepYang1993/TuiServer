@@ -127,7 +127,7 @@ public class MainActivity extends BaseRefreshActivity {
     private List<SettingEntity> getMainList() {
         List<SettingEntity> list = new ArrayList<>();
         list.add(new SettingEntity("广告设置", AdvSettingActivity.class));
-        list.add(new SettingEntity("图片分类设置", SortSettingActivity.class));
+        list.add(new SettingEntity("分类设置", SortSettingActivity.class));
         list.add(new SettingEntity("广告图片设置2", ModifyAdvActivity.class));
         list.add(new SettingEntity("广告图片设置3", ModifyAdvActivity.class));
         list.add(new SettingEntity("广告图片设置4", ModifyAdvActivity.class));

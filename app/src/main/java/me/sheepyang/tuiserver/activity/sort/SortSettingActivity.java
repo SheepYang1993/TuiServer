@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -24,6 +24,7 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
 import me.sheepyang.tuiserver.R;
+import me.sheepyang.tuiserver.activity.adv.ModifyAdvActivity;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
 import me.sheepyang.tuiserver.adapter.SortAdapter;
 import me.sheepyang.tuiserver.app.Constants;
@@ -32,7 +33,7 @@ import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 
 public class SortSettingActivity extends BaseRefreshActivity {
     private static final int TO_ADD_SORT = 0x001;
-    private static final int TO_MODIFY_ADV = 0x002;
+    private static final int TO_MODIFY_SORT = 0x002;
     private List<ImageTypeEntity> mDatas = new ArrayList<>();
     private int mPageSize = 10;
     private int mCurrentPage = 0;
@@ -53,12 +54,11 @@ public class SortSettingActivity extends BaseRefreshActivity {
         mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
-                showMessage("详情");
                 ImageTypeEntity entity = (ImageTypeEntity) adapter.getData().get(position);
-//                Intent intent = new Intent(mActivity, ModifyAdvActivity.class);
-//                intent.putExtra(ModifyAdvActivity.TYPE, ModifyAdvActivity.TYPE_MODIFY);
-//                intent.putExtra(ModifyAdvActivity.ENTITY_DATA, entity);
-//                startActivityForResult(intent, TO_MODIFY_ADV);
+                Intent intent = new Intent(mActivity, ModifySortActivity.class);
+                intent.putExtra(ModifySortActivity.TYPE, ModifySortActivity.TYPE_MODIFY);
+                intent.putExtra(ModifySortActivity.ENTITY_DATA, entity);
+                startActivityForResult(intent, TO_MODIFY_SORT);
             }
         });
         mRecyclerView.addOnItemTouchListener(new OnItemLongClickListener() {
@@ -81,18 +81,18 @@ public class SortSettingActivity extends BaseRefreshActivity {
     private void deleteSortPic(ImageTypeEntity entity) {
         BmobFile file = entity.getPic();
         if (entity.getPic() != null && !TextUtils.isEmpty(entity.getPic().getUrl())) {
-            showDialog("正在删除广告图片...");
+            showDialog("正在删除封面...");
             file.delete(new UpdateListener() {
                 @Override
                 public void done(BmobException e) {
                     if (e == null) {
                         closeDialog();
-                        deleteAdvEntity(entity);
+                        deleteSortEntity(entity);
                     } else {
                         closeDialog();
                         if (151 == e.getErrorCode()) {
                             KLog.i(Constants.TAG, "找不到图片，删除失败");
-                            deleteAdvEntity(entity);
+                            deleteSortEntity(entity);
                         } else {
                             BmobExceptionUtil.handler(e);
                         }
@@ -101,11 +101,11 @@ public class SortSettingActivity extends BaseRefreshActivity {
             });
             return;
         }
-        deleteAdvEntity(entity);
+        deleteSortEntity(entity);
     }
 
-    private void deleteAdvEntity(final ImageTypeEntity entity) {
-        showDialog("正在删除广告...");
+    private void deleteSortEntity(final ImageTypeEntity entity) {
+        showDialog("正在删除分类...");
         entity.delete(new UpdateListener() {
 
             @Override
@@ -126,24 +126,25 @@ public class SortSettingActivity extends BaseRefreshActivity {
     @Override
     protected void startLoadMore(TwinklingRefreshLayout refreshLayout) {
         showDialog("玩命加载中...");
-        getAdvList(1, refreshLayout);
+        getSortList(1, refreshLayout);
     }
 
     @Override
     protected void startRefresh(TwinklingRefreshLayout refreshLayout) {
         showDialog("玩命加载中...");
-        getAdvList(0, refreshLayout);
+        getSortList(0, refreshLayout);
     }
 
     @Override
     public void initRecyclerView() {
-        super.initRecyclerView();
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(mActivity, 2));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         //添加分割线
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(mActivity, DividerItemDecoration.VERTICAL));
+//        mRecyclerView.addItemDecoration(new DividerItemDecoration(mActivity, DividerItemDecoration.VERTICAL));
     }
 
-    private void getAdvList(int type, TwinklingRefreshLayout refreshLayout) {
+    private void getSortList(int type, TwinklingRefreshLayout refreshLayout) {
         BmobQuery<ImageTypeEntity> query = new BmobQuery<ImageTypeEntity>();
         //返回50条数据，如果不加上这条语句，默认返回10条数据
         query.setLimit(mPageSize);
@@ -211,7 +212,7 @@ public class SortSettingActivity extends BaseRefreshActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case TO_ADD_SORT:
-            case TO_MODIFY_ADV:
+            case TO_MODIFY_SORT:
                 if (resultCode == RESULT_OK) {
                     mRefreshLayout.startRefresh();
                 }

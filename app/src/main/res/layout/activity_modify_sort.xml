@@ -28,7 +28,7 @@
             android:layout_height="wrap_content">
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/btn_model_list"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
@@ -58,7 +58,7 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginStart="15dp"
-                android:hint="请输入分类名称"
+                android:hint="请输入名称"
                 android:maxLength="200"
                 android:maxLines="3"
                 android:textSize="18sp"
@@ -87,7 +87,7 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginStart="15dp"
-                android:hint="请输入分类描述"
+                android:hint="请输入描述"
                 android:maxLength="200"
                 android:maxLines="3"
                 android:textSize="18sp"
@@ -181,6 +181,28 @@
                 app:layout_constraintRight_toRightOf="parent"/>
 
             <CheckBox
+                android:id="@+id/cb_is_vip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:text="是否VIP专属"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rg_habit"/>
+
+            <CheckBox
+                android:id="@+id/cb_is_blur"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:text="是否模糊"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cb_is_vip"/>
+
+            <CheckBox
                 android:id="@+id/cb_is_show"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -189,10 +211,10 @@
                 android:layout_marginTop="15dp"
                 android:text="立即显示"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rg_habit"/>
+                app:layout_constraintTop_toBottomOf="@+id/cb_is_blur"/>
 
             <Button
-                android:id="@+id/btn_select_adv_image"
+                android:id="@+id/btn_select_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
@@ -200,17 +222,17 @@
                 android:layout_marginTop="8dp"
                 android:text="选择封面"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button"/>
+                app:layout_constraintTop_toBottomOf="@+id/btn_model_list"/>
 
             <ImageView
-                android:id="@+id/iv_adv"
-                android:layout_width="0dp"
+                android:id="@+id/iv_image"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="0dp"
                 android:layout_marginTop="15dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_select_adv_image"/>
+                app:layout_constraintTop_toBottomOf="@+id/btn_select_image"/>
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 </LinearLayout>
