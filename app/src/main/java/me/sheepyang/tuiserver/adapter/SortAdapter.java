@@ -48,6 +48,12 @@ public class SortAdapter extends BaseQuickAdapter<ImageTypeEntity, BaseViewHolde
             helper.setText(R.id.tv_photo_num, "0");
         }
 
+        helper.setText(R.id.tv_is_show, item.getShow() ? "正在展示" : "未展示");
+        helper.setText(R.id.tv_is_vip, item.getVip() ? "会员专属" : "");
+        helper.setText(R.id.tv_is_blur, item.getBlur() ? "需模糊" : "");
+        helper.setVisible(R.id.tv_is_vip, item.getVip());
+        helper.setVisible(R.id.tv_is_blur, item.getBlur());
+
         if (item.getPic() != null && !TextUtils.isEmpty(item.getPic().getFileUrl())) {
             Glide.with(mContext)
                     .load(item.getPic().getFileUrl())

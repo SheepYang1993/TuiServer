@@ -41,7 +41,7 @@ public class SortSettingActivity extends BaseRefreshActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setBarTitle("图片分类设置");
+        setBarTitle("分类设置");
         setBarRight("添加", (View v) -> {
             startActivityForResult(new Intent(mActivity, ModifySortActivity.class), TO_ADD_SORT);
         });
