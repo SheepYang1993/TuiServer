@@ -51,6 +51,11 @@
         <activity
             android:name=".activity.adv.ModifyAdvActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.sort.SortSettingActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activity.sort.ModifySortActivity">
+        </activity>
     </application>
 
 </manifest>

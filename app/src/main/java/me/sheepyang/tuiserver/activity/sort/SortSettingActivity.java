@@ -24,7 +24,6 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
 import me.sheepyang.tuiserver.R;
-import me.sheepyang.tuiserver.activity.adv.ModifyAdvActivity;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
 import me.sheepyang.tuiserver.adapter.SortAdapter;
 import me.sheepyang.tuiserver.app.Constants;
@@ -32,8 +31,7 @@ import me.sheepyang.tuiserver.bmobentity.ImageTypeEntity;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 
 public class SortSettingActivity extends BaseRefreshActivity {
-
-    private static final int TO_ADD_ADV = 0x001;
+    private static final int TO_ADD_SORT = 0x001;
     private static final int TO_MODIFY_ADV = 0x002;
     private List<ImageTypeEntity> mDatas = new ArrayList<>();
     private int mPageSize = 10;
@@ -44,7 +42,7 @@ public class SortSettingActivity extends BaseRefreshActivity {
         super.onCreate(savedInstanceState);
         setBarTitle("图片分类设置");
         setBarRight("添加", (View v) -> {
-            startActivityForResult(new Intent(mActivity, ModifyAdvActivity.class), TO_ADD_ADV);
+            startActivityForResult(new Intent(mActivity, ModifySortActivity.class), TO_ADD_SORT);
         });
         mRefreshLayout.startRefresh();
     }
@@ -55,11 +53,12 @@ public class SortSettingActivity extends BaseRefreshActivity {
         mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
+                showMessage("详情");
                 ImageTypeEntity entity = (ImageTypeEntity) adapter.getData().get(position);
-                Intent intent = new Intent(mActivity, ModifyAdvActivity.class);
-                intent.putExtra(ModifyAdvActivity.TYPE, ModifyAdvActivity.TYPE_MODIFY);
-                intent.putExtra(ModifyAdvActivity.ENTITY_DATA, entity);
-                startActivityForResult(intent, TO_MODIFY_ADV);
+//                Intent intent = new Intent(mActivity, ModifyAdvActivity.class);
+//                intent.putExtra(ModifyAdvActivity.TYPE, ModifyAdvActivity.TYPE_MODIFY);
+//                intent.putExtra(ModifyAdvActivity.ENTITY_DATA, entity);
+//                startActivityForResult(intent, TO_MODIFY_ADV);
             }
         });
         mRecyclerView.addOnItemTouchListener(new OnItemLongClickListener() {
@@ -211,7 +210,7 @@ public class SortSettingActivity extends BaseRefreshActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case TO_ADD_ADV:
+            case TO_ADD_SORT:
             case TO_MODIFY_ADV:
                 if (resultCode == RESULT_OK) {
                     mRefreshLayout.startRefresh();

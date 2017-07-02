@@ -18,7 +18,7 @@ public class AdvEntity extends BmobObject implements Serializable {
     private String tempUrl;//可存放url
     private BmobFile pic;//广告图片
     private String picUrl;//图片路径
-    private Boolean isShow;
+    private Boolean isShow;//是否展示
 
     public Boolean getShow() {
         return isShow;

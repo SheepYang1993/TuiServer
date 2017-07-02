@@ -21,6 +21,7 @@ import java.util.List;
 import me.sheepyang.tuiserver.activity.adv.AdvSettingActivity;
 import me.sheepyang.tuiserver.activity.adv.ModifyAdvActivity;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
+import me.sheepyang.tuiserver.activity.sort.SortSettingActivity;
 import me.sheepyang.tuiserver.adapter.SettingAdapter;
 import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.entity.SettingEntity;
@@ -125,8 +126,8 @@ public class MainActivity extends BaseRefreshActivity {
 
     private List<SettingEntity> getMainList() {
         List<SettingEntity> list = new ArrayList<>();
-        list.add(new SettingEntity("广告图片设置", AdvSettingActivity.class));
-        list.add(new SettingEntity("广告图片设置1", ModifyAdvActivity.class));
+        list.add(new SettingEntity("广告设置", AdvSettingActivity.class));
+        list.add(new SettingEntity("图片分类设置", SortSettingActivity.class));
         list.add(new SettingEntity("广告图片设置2", ModifyAdvActivity.class));
         list.add(new SettingEntity("广告图片设置3", ModifyAdvActivity.class));
         list.add(new SettingEntity("广告图片设置4", ModifyAdvActivity.class));

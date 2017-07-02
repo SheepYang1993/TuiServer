@@ -296,6 +296,7 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
         });
         if (TYPE_MODIFY.equals(mType)) {
             mQBar.setOnRightClickListener((View v) -> {
+                KLog.e();
                 modifyAdv(mAdvEntity);
             });
         } else {
@@ -360,14 +361,17 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
         entity.setType(type);
         entity.setShow(mCbIsShow.isChecked());
 
+        KLog.e();
         modifyAdvImage(entity, new OnModifyAdvImageListener() {
             @Override
             public void onSuccess(AdvEntity entity) {
+                KLog.e();
                 updateAdvEntity(entity);
             }
 
             @Override
             public void onError(BmobException e) {
+                KLog.e();
                 closeDialog();
                 BmobExceptionUtil.handler(e);
             }
@@ -375,7 +379,9 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void modifyAdvImage(AdvEntity entity, OnModifyAdvImageListener listener) {
+        KLog.e();
         if (entity.getPic() == null || TextUtils.isEmpty(entity.getPic().getFileUrl())) {//服务器无图
+            KLog.e();
             // 例如 LocalMedia 里面返回三种path
             // 1.media.getPath(); 为原图path
             // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true
@@ -420,6 +426,7 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
             entity.setPic(null);
             listener.onSuccess(entity);
         } else {//服务器已经有图
+            KLog.e();
             if (mIsNeedDeleteBmobImage) {
                 mIsNeedDeleteBmobImage = false;
                 showDialog("正在修改图片...");
@@ -474,6 +481,9 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                         }
                     }
                 });
+            } else {
+                KLog.e();
+                listener.onSuccess(entity);
             }
         }
     }

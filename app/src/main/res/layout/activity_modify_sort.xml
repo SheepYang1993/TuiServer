@@ -17,7 +17,7 @@
         app:qb_is_back="true"
         app:qb_right_text="添加"
         app:qb_right_text_size="12sp"
-        app:qb_title="添加广告"/>
+        app:qb_title="添加分类"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -27,6 +27,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <Button
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:text="查看该分类套图"
+                android:visibility="gone"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cb_is_show"/>
+
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
@@ -34,20 +45,20 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="15dp"
-                android:text="标题"
+                android:text="名称"
                 android:textSize="18sp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="parent"/>
 
             <EditText
-                android:id="@+id/edt_title"
+                android:id="@+id/edt_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="15dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginStart="15dp"
-                android:hint="请输入标题"
+                android:hint="请输入分类名称"
                 android:maxLength="200"
                 android:maxLines="3"
                 android:textSize="18sp"
@@ -66,7 +77,7 @@
                 android:text="描述"
                 android:textSize="18sp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edt_title"/>
+                app:layout_constraintTop_toBottomOf="@+id/edt_name"/>
 
             <EditText
                 android:id="@+id/edt_desc"
@@ -76,7 +87,7 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginStart="15dp"
-                android:hint="请输入描述"
+                android:hint="请输入分类描述"
                 android:maxLength="200"
                 android:maxLines="3"
                 android:textSize="18sp"
@@ -127,49 +138,6 @@
                     android:text="女生"/>
             </RadioGroup>
 
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:text="类型"
-                android:textSize="18sp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3"/>
-
-            <RadioGroup
-                android:id="@+id/rg_type"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="8dp"
-                android:checkedButton="@+id/rbtn_type_none"
-                android:orientation="horizontal"
-                app:layout_constraintLeft_toRightOf="@+id/textView4"
-                app:layout_constraintTop_toBottomOf="@+id/rg_habit">
-
-                <RadioButton
-                    android:id="@+id/rbtn_type_none"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="置空"/>
-
-                <RadioButton
-                    android:id="@+id/rbtn_type_web"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="外链"/>
-
-                <RadioButton
-                    android:id="@+id/rbtn_type_model"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="模特"/>
-            </RadioGroup>
-
             <Button
                 android:id="@+id/btn_select_model"
                 android:layout_width="wrap_content"
@@ -180,7 +148,7 @@
                 android:text="选择模特"
                 android:visibility="gone"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rg_type"/>
+                app:layout_constraintTop_toBottomOf="@+id/rg_habit"/>
 
             <TextView
                 android:id="@+id/tv_web_address"
@@ -221,7 +189,7 @@
                 android:layout_marginTop="15dp"
                 android:text="立即显示"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rg_type"/>
+                app:layout_constraintTop_toBottomOf="@+id/rg_habit"/>
 
             <Button
                 android:id="@+id/btn_select_adv_image"
@@ -229,10 +197,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:text="选择广告图片"
+                android:layout_marginTop="8dp"
+                android:text="选择封面"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cb_is_show"/>
+                app:layout_constraintTop_toBottomOf="@+id/button"/>
 
             <ImageView
                 android:id="@+id/iv_adv"
