@@ -24,7 +24,6 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
 import me.sheepyang.tuiserver.R;
-import me.sheepyang.tuiserver.activity.adv.ModifyAdvActivity;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
 import me.sheepyang.tuiserver.adapter.SortAdapter;
 import me.sheepyang.tuiserver.app.Constants;
@@ -154,7 +153,8 @@ public class SortSettingActivity extends BaseRefreshActivity {
                 break;
         }
         query.setSkip(mCurrentPage * mPageSize);
-        query.order("-updatedAt");
+//        query.order("-updatedAt");
+        query.order("-createdAt");
         //执行查询方法
         query.findObjects(new FindListener<ImageTypeEntity>() {
 
