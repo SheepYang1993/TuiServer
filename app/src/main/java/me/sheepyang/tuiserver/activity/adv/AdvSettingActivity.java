@@ -27,7 +27,7 @@ import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
 import me.sheepyang.tuiserver.adapter.AdvAdapter;
 import me.sheepyang.tuiserver.app.Constants;
-import me.sheepyang.tuiserver.bmobentity.AdvEntity;
+import me.sheepyang.tuiserver.model.bmobentity.AdvEntity;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 
 public class AdvSettingActivity extends BaseRefreshActivity {

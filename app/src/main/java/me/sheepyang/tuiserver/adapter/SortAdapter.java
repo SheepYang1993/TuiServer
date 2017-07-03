@@ -13,9 +13,8 @@ import com.chad.library.adapter.base.BaseViewHolder;
 
 import java.util.List;
 
-import cn.bmob.v3.http.bean.Api;
 import me.sheepyang.tuiserver.R;
-import me.sheepyang.tuiserver.bmobentity.ImageTypeEntity;
+import me.sheepyang.tuiserver.model.bmobentity.ImageTypeEntity;
 
 /**
  * Created by Administrator on 2017/7/1.

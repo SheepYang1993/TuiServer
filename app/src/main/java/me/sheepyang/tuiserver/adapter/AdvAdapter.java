@@ -14,7 +14,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import java.util.List;
 
 import me.sheepyang.tuiserver.R;
-import me.sheepyang.tuiserver.bmobentity.AdvEntity;
+import me.sheepyang.tuiserver.model.bmobentity.AdvEntity;
 
 /**
  * Created by SheepYang on 2017-06-21.

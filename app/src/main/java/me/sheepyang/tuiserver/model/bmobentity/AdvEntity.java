@@ -1,4 +1,4 @@
-package me.sheepyang.tuiserver.bmobentity;
+package me.sheepyang.tuiserver.model.bmobentity;
 
 import java.io.Serializable;
 

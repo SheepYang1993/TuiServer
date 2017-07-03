@@ -1,4 +1,4 @@
-package me.sheepyang.tuiserver.entity;
+package me.sheepyang.tuiserver.model.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;

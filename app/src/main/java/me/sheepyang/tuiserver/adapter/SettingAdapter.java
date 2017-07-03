@@ -8,7 +8,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import java.util.List;
 
 import me.sheepyang.tuiserver.R;
-import me.sheepyang.tuiserver.entity.SettingEntity;
+import me.sheepyang.tuiserver.model.entity.SettingEntity;
 
 /**
  * Created by SheepYang on 2017-06-21.

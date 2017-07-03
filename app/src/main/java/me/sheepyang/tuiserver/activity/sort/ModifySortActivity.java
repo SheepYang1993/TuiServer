@@ -40,7 +40,7 @@ import cn.bmob.v3.listener.UploadFileListener;
 import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseActivity;
 import me.sheepyang.tuiserver.app.Constants;
-import me.sheepyang.tuiserver.bmobentity.ImageTypeEntity;
+import me.sheepyang.tuiserver.model.bmobentity.ImageTypeEntity;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 import me.sheepyang.tuiserver.widget.QBar;
 
