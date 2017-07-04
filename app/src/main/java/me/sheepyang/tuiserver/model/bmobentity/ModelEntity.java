@@ -1,6 +1,7 @@
 package me.sheepyang.tuiserver.model.bmobentity;
 
 
+import java.io.Serializable;
 import java.util.List;
 
 import cn.bmob.v3.datatype.BmobDate;
@@ -9,12 +10,13 @@ import cn.bmob.v3.datatype.BmobDate;
  * Created by SheepYang on 2017-07-03.
  */
 
-public class ModelEntity extends UserEntity {
+public class ModelEntity extends UserEntity implements Serializable {
     private BmobDate birthday;//生日
     private String cupSize;//罩杯
     private String waistSize;//腰围
     private String bustSize;//胸围
     private String hipSize;//臀围
+    private String weight;//体重
     private Boolean isShow;//是否展示
     private List<PhotoBagEntity> photoBagList;//套图列表
 
@@ -72,5 +74,13 @@ public class ModelEntity extends UserEntity {
 
     public void setPhotoBagList(List<PhotoBagEntity> photoBagList) {
         this.photoBagList = photoBagList;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
     }
 }

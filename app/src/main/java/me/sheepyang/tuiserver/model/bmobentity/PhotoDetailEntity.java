@@ -1,5 +1,7 @@
 package me.sheepyang.tuiserver.model.bmobentity;
 
+import java.io.Serializable;
+
 import cn.bmob.v3.BmobObject;
 
 /**
@@ -7,6 +9,6 @@ import cn.bmob.v3.BmobObject;
  * 套图详情-所有图片
  */
 
-public class PhotoDetailEntity extends BmobObject {
+public class PhotoDetailEntity extends BmobObject implements Serializable {
 
 }

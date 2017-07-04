@@ -58,6 +58,8 @@
         </activity>
         <activity android:name=".activity.model.ModelListActivity">
         </activity>
+        <activity android:name=".activity.model.ModifyModelActivity">
+        </activity>
     </application>
 
 </manifest>

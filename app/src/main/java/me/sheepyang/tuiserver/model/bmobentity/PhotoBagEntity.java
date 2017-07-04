@@ -1,5 +1,7 @@
 package me.sheepyang.tuiserver.model.bmobentity;
 
+import java.io.Serializable;
+
 import cn.bmob.v3.BmobObject;
 
 /**
@@ -7,7 +9,7 @@ import cn.bmob.v3.BmobObject;
  * 套图信息
  */
 
-public class PhotoBagEntity extends BmobObject {
+public class PhotoBagEntity extends BmobObject implements Serializable {
     private Integer collectedNum;//收藏数
     private Integer seeNum;//浏览数
     private String label;//标签
