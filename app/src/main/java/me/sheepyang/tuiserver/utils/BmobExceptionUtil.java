@@ -12,6 +12,11 @@ import cn.bmob.v3.exception.BmobException;
 public class BmobExceptionUtil {
     public static void handler(BmobException e) {
         switch (e.getErrorCode()) {
+            case 100://something wrong with your code
+            case 502://查询失败
+                KLog.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
+                ToastUtils.showShortToast("服务器又炸啦~再刷新下试试~");
+                break;
             case 202://用户名已存在
                 KLog.i("bmob", "202, 用户名已存在");
                 ToastUtils.showShortToast("用户名已存在");
@@ -19,6 +24,10 @@ public class BmobExceptionUtil {
             case 207://验证码错误
                 KLog.i("bmob", "207, 验证码错误");
                 ToastUtils.showShortToast("验证码错误");
+                break;
+            case 9016://验证码错误
+                KLog.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
+                ToastUtils.showShortToast("网络链接异常，请检查网络");
                 break;
             default:
                 KLog.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());

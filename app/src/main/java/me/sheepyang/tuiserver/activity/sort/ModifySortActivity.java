@@ -197,8 +197,22 @@ public class ModifySortActivity extends BaseActivity implements View.OnClickList
         });
         if (TYPE_MODIFY.equals(mType)) {
             mQBar.setOnRightClickListener((View v) -> {
-                KLog.e();
-                modifySort(mSortEntity);
+                new AlertDialog.Builder(mActivity)
+                        .setMessage("确定要修改分类吗？")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                KLog.e();
+                                modifySort(mSortEntity);
+                            }
+                        })
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
             });
         } else {
             mQBar.setOnRightClickListener((View v) -> {

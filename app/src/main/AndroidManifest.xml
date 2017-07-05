@@ -46,20 +46,26 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.adv.AdvSettingActivity"
+            android:name=".activity.adv.AdvListActivity"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".activity.adv.ModifyAdvActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".activity.sort.SortSettingActivity"
+            android:name=".activity.sort.SortListActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activity.sort.ModifySortActivity">
-        </activity>
-        <activity android:name=".activity.model.ModelListActivity">
-        </activity>
-        <activity android:name=".activity.model.ModifyModelActivity">
-        </activity>
+        <activity
+            android:name=".activity.sort.ModifySortActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.model.ModelListActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.model.ModifyModelActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.photos.PhotoListActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

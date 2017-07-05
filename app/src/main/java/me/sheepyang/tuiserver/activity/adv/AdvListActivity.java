@@ -1,11 +1,11 @@
-package me.sheepyang.tuiserver.activity.sort;
+package me.sheepyang.tuiserver.activity.adv;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.DividerItemDecoration;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -25,24 +25,25 @@ import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
 import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
-import me.sheepyang.tuiserver.adapter.SortAdapter;
+import me.sheepyang.tuiserver.adapter.AdvAdapter;
 import me.sheepyang.tuiserver.app.Constants;
-import me.sheepyang.tuiserver.model.bmobentity.ImageTypeEntity;
+import me.sheepyang.tuiserver.model.bmobentity.AdvEntity;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 
-public class SortSettingActivity extends BaseRefreshActivity {
-    private static final int TO_ADD_SORT = 0x001;
-    private static final int TO_MODIFY_SORT = 0x002;
-    private List<ImageTypeEntity> mDatas = new ArrayList<>();
+public class AdvListActivity extends BaseRefreshActivity {
+
+    private static final int TO_ADD_ADV = 0x001;
+    private static final int TO_MODIFY_ADV = 0x002;
+    private List<AdvEntity> mDatas = new ArrayList<>();
     private int mPageSize = 10;
     private int mCurrentPage = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setBarTitle("分类设置");
+        setBarTitle("广告设置");
         setBarRight("添加", (View v) -> {
-            startActivityForResult(new Intent(mActivity, ModifySortActivity.class), TO_ADD_SORT);
+            startActivityForResult(new Intent(mActivity, ModifyAdvActivity.class), TO_ADD_ADV);
         });
         mRefreshLayout.startRefresh();
     }
@@ -53,21 +54,21 @@ public class SortSettingActivity extends BaseRefreshActivity {
         mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
-                ImageTypeEntity entity = (ImageTypeEntity) adapter.getData().get(position);
-                Intent intent = new Intent(mActivity, ModifySortActivity.class);
-                intent.putExtra(ModifySortActivity.TYPE, ModifySortActivity.TYPE_MODIFY);
-                intent.putExtra(ModifySortActivity.ENTITY_DATA, entity);
-                startActivityForResult(intent, TO_MODIFY_SORT);
+                AdvEntity entity = (AdvEntity) adapter.getData().get(position);
+                Intent intent = new Intent(mActivity, ModifyAdvActivity.class);
+                intent.putExtra(ModifyAdvActivity.TYPE, ModifyAdvActivity.TYPE_MODIFY);
+                intent.putExtra(ModifyAdvActivity.ENTITY_DATA, entity);
+                startActivityForResult(intent, TO_MODIFY_ADV);
             }
         });
         mRecyclerView.addOnItemTouchListener(new OnItemLongClickListener() {
             @Override
             public void onSimpleItemLongClick(BaseQuickAdapter adapter, View view, int position) {
-                ImageTypeEntity entity = (ImageTypeEntity) adapter.getData().get(position);
+                AdvEntity entity = (AdvEntity) adapter.getData().get(position);
                 new AlertDialog.Builder(mActivity)
-                        .setMessage("确定要删除 " + entity.getName() + " 这个分类吗？")
+                        .setMessage("确定要删除 " + entity.getTitle() + " 这条广告吗？")
                         .setPositiveButton("删除", (DialogInterface dialog, int which) -> {
-                            deleteSortPic(entity);
+                            deleteAdvPic(entity);
                         })
                         .setNegativeButton("取消", (DialogInterface dialog, int which) -> {
                             dialog.dismiss();
@@ -77,21 +78,21 @@ public class SortSettingActivity extends BaseRefreshActivity {
         });
     }
 
-    private void deleteSortPic(ImageTypeEntity entity) {
+    private void deleteAdvPic(AdvEntity entity) {
         BmobFile file = entity.getPic();
         if (entity.getPic() != null && !TextUtils.isEmpty(entity.getPic().getUrl())) {
-            showDialog("正在删除封面...");
+            showDialog("正在删除广告图片...");
             file.delete(new UpdateListener() {
                 @Override
                 public void done(BmobException e) {
                     if (e == null) {
                         closeDialog();
-                        deleteSortEntity(entity);
+                        deleteAdvEntity(entity);
                     } else {
                         closeDialog();
                         if (151 == e.getErrorCode()) {
                             KLog.i(Constants.TAG, "找不到图片，删除失败");
-                            deleteSortEntity(entity);
+                            deleteAdvEntity(entity);
                         } else {
                             BmobExceptionUtil.handler(e);
                         }
@@ -100,11 +101,11 @@ public class SortSettingActivity extends BaseRefreshActivity {
             });
             return;
         }
-        deleteSortEntity(entity);
+        deleteAdvEntity(entity);
     }
 
-    private void deleteSortEntity(final ImageTypeEntity entity) {
-        showDialog("正在删除分类...");
+    private void deleteAdvEntity(final AdvEntity entity) {
+        showDialog("正在删除广告...");
         entity.delete(new UpdateListener() {
 
             @Override
@@ -125,26 +126,25 @@ public class SortSettingActivity extends BaseRefreshActivity {
     @Override
     protected void startLoadMore(TwinklingRefreshLayout refreshLayout) {
         showDialog("玩命加载中...");
-        getSortList(1, refreshLayout);
+        getAdvList(1, refreshLayout);
     }
 
     @Override
     protected void startRefresh(TwinklingRefreshLayout refreshLayout) {
         showDialog("玩命加载中...");
-        getSortList(0, refreshLayout);
+        getAdvList(0, refreshLayout);
     }
 
     @Override
     public void initRecyclerView() {
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(mActivity, 2));
+        super.initRecyclerView();
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         //添加分割线
-//        mRecyclerView.addItemDecoration(new DividerItemDecoration(mActivity, DividerItemDecoration.VERTICAL));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mActivity, DividerItemDecoration.VERTICAL));
     }
 
-    private void getSortList(int type, TwinklingRefreshLayout refreshLayout) {
-        BmobQuery<ImageTypeEntity> query = new BmobQuery<ImageTypeEntity>();
+    private void getAdvList(int type, TwinklingRefreshLayout refreshLayout) {
+        BmobQuery<AdvEntity> query = new BmobQuery<AdvEntity>();
         //返回50条数据，如果不加上这条语句，默认返回10条数据
         query.setLimit(mPageSize);
         switch (type) {
@@ -156,10 +156,10 @@ public class SortSettingActivity extends BaseRefreshActivity {
 //        query.order("-updatedAt");
         query.order("-createdAt");
         //执行查询方法
-        query.findObjects(new FindListener<ImageTypeEntity>() {
+        query.findObjects(new FindListener<AdvEntity>() {
 
             @Override
-            public void done(List<ImageTypeEntity> object, BmobException e) {
+            public void done(List<AdvEntity> object, BmobException e) {
                 if (e == null) {
                     if (object != null && object.size() > 0) {
                         switch (type) {
@@ -204,15 +204,15 @@ public class SortSettingActivity extends BaseRefreshActivity {
 
     @Override
     public BaseQuickAdapter initAdapter() {
-        return new SortAdapter(mDatas);
+        return new AdvAdapter(mDatas);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case TO_ADD_SORT:
-            case TO_MODIFY_SORT:
+            case TO_ADD_ADV:
+            case TO_MODIFY_ADV:
                 if (resultCode == RESULT_OK) {
                     mRefreshLayout.startRefresh();
                 }

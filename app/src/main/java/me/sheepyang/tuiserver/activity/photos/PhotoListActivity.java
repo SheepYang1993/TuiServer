@@ -1,4 +1,4 @@
-package me.sheepyang.tuiserver.activity.adv;
+package me.sheepyang.tuiserver.activity.photos;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,27 +24,37 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
 import me.sheepyang.tuiserver.R;
+import me.sheepyang.tuiserver.activity.adv.ModifyAdvActivity;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
 import me.sheepyang.tuiserver.adapter.AdvAdapter;
 import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.model.bmobentity.AdvEntity;
+import me.sheepyang.tuiserver.model.bmobentity.ModelEntity;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 
-public class AdvSettingActivity extends BaseRefreshActivity {
+public class PhotoListActivity extends BaseRefreshActivity {
 
     private static final int TO_ADD_ADV = 0x001;
     private static final int TO_MODIFY_ADV = 0x002;
+    public static final String MODEL_DATA = "model_data";
     private List<AdvEntity> mDatas = new ArrayList<>();
     private int mPageSize = 10;
     private int mCurrentPage = 0;
+    private ModelEntity mModelEntity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setBarTitle("广告设置");
+        setBarTitle("套图详情");
         setBarRight("添加", (View v) -> {
             startActivityForResult(new Intent(mActivity, ModifyAdvActivity.class), TO_ADD_ADV);
         });
+        mModelEntity = (ModelEntity) getIntent().getSerializableExtra(MODEL_DATA);
+        if (mModelEntity == null) {
+            showMessage("找不到模特信息");
+            onBackPressed();
+            return;
+        }
         mRefreshLayout.startRefresh();
     }
 
@@ -153,7 +163,8 @@ public class AdvSettingActivity extends BaseRefreshActivity {
                 break;
         }
         query.setSkip(mCurrentPage * mPageSize);
-        query.order("-updatedAt");
+//        query.order("-updatedAt");
+        query.order("-createdAt");
         //执行查询方法
         query.findObjects(new FindListener<AdvEntity>() {
 

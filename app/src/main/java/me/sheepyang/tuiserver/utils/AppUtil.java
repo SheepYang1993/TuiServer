@@ -3,6 +3,7 @@ package me.sheepyang.tuiserver.utils;
 import android.content.Context;
 
 import cn.bmob.v3.Bmob;
+import me.sheepyang.tuiserver.model.bmobentity.UserEntity;
 
 /**
  * Created by SheepYang on 2017-06-20.
@@ -24,5 +25,10 @@ public class AppUtil {
         //.setFileExpiration(2500)
         //.build();
         //Bmob.initialize(config);
+    }
+
+    public static void logout() {
+        UserEntity.logOut();   //清除缓存用户对象
+//        UserEntity currentUser = BmobUser.getCurrentUser(UserEntity.class); // 现在的currentUser是null了
     }
 }

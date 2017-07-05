@@ -17,8 +17,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.KeyboardUtils;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.compress.Luban;
 import com.luck.picture.lib.config.PictureConfig;
@@ -44,6 +42,7 @@ import me.sheepyang.tuiserver.activity.base.BaseActivity;
 import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.model.bmobentity.AdvEntity;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
+import me.sheepyang.tuiserver.utils.GlideApp;
 import me.sheepyang.tuiserver.widget.QBar;
 import me.sheepyang.tuiserver.widget.dialog.LoadingDialog;
 
@@ -92,7 +91,6 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
     private List<LocalMedia> mImageSelectList = new ArrayList<>();
     private String mType;
     private AdvEntity mAdvEntity;
-    private RequestOptions mOptions;
     private boolean mIsNeedDeleteBmobImage;
 
     @Override
@@ -166,9 +164,9 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
             mCbIsShow.setChecked(mAdvEntity.getShow());
 
             if (mAdvEntity.getPic() != null && !TextUtils.isEmpty(mAdvEntity.getPic().getFileUrl())) {
-                Glide.with(mActivity)
+                GlideApp.with(mActivity)
                         .load(mAdvEntity.getPic().getFileUrl())
-                        .apply(mOptions)
+                        .centerCrop()
                         .into(mIvAdv);
             }
         }
@@ -202,9 +200,6 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void initView() {
-        mOptions = new RequestOptions()
-                .centerCrop();
-
         ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) mIvAdv.getLayoutParams();
         lp.width = ScreenUtils.getScreenWidth(mActivity);
         lp.height = lp.width / 3;
@@ -239,9 +234,9 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                         .setPositiveButton("删除", (DialogInterface dialog, int which) -> {
                             showDialog("正在删除图片");
                             mImageSelectList = new ArrayList<LocalMedia>();
-                            Glide.with(mActivity)
+                            GlideApp.with(mActivity)
                                     .load("")
-                                    .apply(mOptions)
+                                    .centerCrop()
                                     .into(mIvAdv);
                             closeDialog();
                         })
@@ -254,9 +249,9 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                         .setMessage("确定要删除 " + mAdvEntity.getTitle() + " 这张广告图片吗？")
                         .setPositiveButton("删除", (DialogInterface dialog, int which) -> {
                             mIsNeedDeleteBmobImage = true;
-                            Glide.with(mActivity)
+                            GlideApp.with(mActivity)
                                     .load("")
-                                    .apply(mOptions)
+                                    .centerCrop()
                                     .into(mIvAdv);
                         })
                         .setNegativeButton("取消", (DialogInterface dialog, int which) -> {
@@ -296,8 +291,21 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
         });
         if (TYPE_MODIFY.equals(mType)) {
             mQBar.setOnRightClickListener((View v) -> {
-                KLog.e();
-                modifyAdv(mAdvEntity);
+                new AlertDialog.Builder(mActivity)
+                        .setMessage("确定要修改广告信息吗？")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                modifyAdv(mAdvEntity);
+                            }
+                        })
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
             });
         } else {
             mQBar.setOnRightClickListener((View v) -> {
@@ -745,9 +753,9 @@ public class ModifyAdvActivity extends BaseActivity implements View.OnClickListe
                                 mIsNeedDeleteBmobImage = true;
                             }
                             KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
-                            Glide.with(mActivity)
+                            GlideApp.with(mActivity)
                                     .load(media.getCompressPath())
-                                    .apply(mOptions)
+                                    .centerCrop()
                                     .into(mIvAdv);
                         } else {
                             showMessage("图片选取失败");

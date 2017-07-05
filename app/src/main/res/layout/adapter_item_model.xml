@@ -53,7 +53,6 @@
                 android:id="@+id/tv_tz_sw"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
                 android:layout_marginTop="5dp"
                 android:textColor="@color/white"
                 android:textSize="12sp"
@@ -63,6 +62,7 @@
                 android:id="@+id/tv_birthday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 tool:text="生日:1990-09-23"/>
@@ -70,7 +70,7 @@
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
@@ -89,16 +89,25 @@
                 android:id="@+id/tv_cup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
                 android:layout_marginTop="5dp"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 tool:text="罩杯:A"/>
 
             <TextView
+                android:id="@+id/tv_weight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                tool:text="体重:60KG"/>
+
+            <TextView
                 android:id="@+id/tv_total_photos"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 tool:text="套图:0套"/>

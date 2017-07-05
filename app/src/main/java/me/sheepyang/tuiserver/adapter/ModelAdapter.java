@@ -29,7 +29,7 @@ public class ModelAdapter extends BaseQuickAdapter<ModelEntity, BaseViewHolder> 
 
     @Override
     protected void convert(BaseViewHolder helper, ModelEntity item) {
-        helper.setText(R.id.tv_name, item.getNick());
+        helper.setText(R.id.tv_name, "昵称:" + item.getNick());
         switch (item.getSex()) {
             case 1:
                 helper.setText(R.id.tv_sex, "性别:男");
@@ -40,6 +40,7 @@ public class ModelAdapter extends BaseQuickAdapter<ModelEntity, BaseViewHolder> 
         }
 
         StringBuilder tz_sw = new StringBuilder();
+        tz_sw.append("三围:");
         if (!TextUtils.isEmpty(item.getBustSize())) {
             tz_sw.append(item.getBustSize());
         } else {
@@ -55,15 +56,16 @@ public class ModelAdapter extends BaseQuickAdapter<ModelEntity, BaseViewHolder> 
         } else {
             tz_sw.append("-0");
         }
-        if (!TextUtils.isEmpty(item.getWeight())) {
-            tz_sw.append(" " + item.getWeight() + "KG");
-        } else {
-            tz_sw.append(" 0KG");
-        }
+
         helper.setText(R.id.tv_tz_sw, tz_sw);
-        helper.setText(R.id.tv_birthday, DateUtil.getStringByFormat(item.getBirthday().getDate(), DateUtil.dateFormatYMD));
+        helper.setText(R.id.tv_birthday, "生日:" + DateUtil.getStringByFormat(item.getBirthday().getDate(), DateUtil.dateFormatYMD));
         helper.setText(R.id.tv_is_show, item.getShow() ? "正在展示" : "未展示");
         helper.setText(R.id.tv_cup, "罩杯:" + item.getCupSize());
+        if (item.getWeight() != null) {
+            helper.setText(R.id.tv_weight, "体重:" + item.getWeight() + "KG");
+        } else {
+            helper.setText(R.id.tv_weight, "体重:0KG");
+        }
         if (item.getPhotoBagList() != null && item.getPhotoBagList().size() > 0) {
             helper.setText(R.id.tv_total_photos, "套图:" + item.getPhotoBagList().size() + "套");
         } else {

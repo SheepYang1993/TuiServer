@@ -3,6 +3,7 @@ package me.sheepyang.tuiserver.model.bmobentity;
 import java.io.Serializable;
 
 import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.datatype.BmobFile;
 
 /**
  * Created by SheepYang on 2017-07-03.
@@ -18,6 +19,8 @@ public class PhotoBagEntity extends BmobObject implements Serializable {
     private Boolean isBlur;//是否模糊
     private Boolean isVip;//是否VIP
     private Boolean isShow;//是否展示
+    private BmobFile coverPic;//封面
+    private Integer photoNum;//套图照片数量
 
     public Integer getCollectedNum() {
         return collectedNum;
