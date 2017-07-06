@@ -11,11 +11,14 @@ import cn.bmob.v3.datatype.BmobFile;
  */
 
 public class PhotoBagEntity extends BmobObject implements Serializable {
-    private Integer collectedNum;//收藏数
-    private Integer seeNum;//浏览数
-    private String label;//标签
+    private ModelEntity model;//所属模特
     private String title;//标题
     private String desc;//描述
+    private String label;//标签
+    private Integer collectedBaseNum;//收藏基数
+    private Integer seeBaseNum;//浏览基数
+    private Integer collectedNum;//收藏数
+    private Integer seeNum;//浏览数
     private Boolean isBlur;//是否模糊
     private Boolean isVip;//是否VIP
     private Boolean isShow;//是否展示
@@ -84,5 +87,45 @@ public class PhotoBagEntity extends BmobObject implements Serializable {
 
     public void setShow(Boolean show) {
         isShow = show;
+    }
+
+    public BmobFile getCoverPic() {
+        return coverPic;
+    }
+
+    public void setCoverPic(BmobFile coverPic) {
+        this.coverPic = coverPic;
+    }
+
+    public Integer getPhotoNum() {
+        return photoNum;
+    }
+
+    public void setPhotoNum(Integer photoNum) {
+        this.photoNum = photoNum;
+    }
+
+    public Integer getCollectedBaseNum() {
+        return collectedBaseNum;
+    }
+
+    public void setCollectedBaseNum(Integer collectedBaseNum) {
+        this.collectedBaseNum = collectedBaseNum;
+    }
+
+    public Integer getSeeBaseNum() {
+        return seeBaseNum;
+    }
+
+    public void setSeeBaseNum(Integer seeBaseNum) {
+        this.seeBaseNum = seeBaseNum;
+    }
+
+    public ModelEntity getModel() {
+        return model;
+    }
+
+    public void setModel(ModelEntity model) {
+        this.model = model;
     }
 }

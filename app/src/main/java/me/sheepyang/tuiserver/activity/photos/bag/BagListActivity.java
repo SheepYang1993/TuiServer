@@ -1,11 +1,10 @@
-package me.sheepyang.tuiserver.activity.photos;
+package me.sheepyang.tuiserver.activity.photos.bag;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -24,20 +23,18 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
 import me.sheepyang.tuiserver.R;
-import me.sheepyang.tuiserver.activity.adv.ModifyAdvActivity;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
-import me.sheepyang.tuiserver.adapter.AdvAdapter;
+import me.sheepyang.tuiserver.adapter.PhotoBagAdapter;
 import me.sheepyang.tuiserver.app.Constants;
-import me.sheepyang.tuiserver.model.bmobentity.AdvEntity;
 import me.sheepyang.tuiserver.model.bmobentity.ModelEntity;
+import me.sheepyang.tuiserver.model.bmobentity.PhotoBagEntity;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 
-public class PhotoListActivity extends BaseRefreshActivity {
-
-    private static final int TO_ADD_ADV = 0x001;
-    private static final int TO_MODIFY_ADV = 0x002;
-    public static final String MODEL_DATA = "model_data";
-    private List<AdvEntity> mDatas = new ArrayList<>();
+public class BagListActivity extends BaseRefreshActivity {
+    private static final int TO_ADD_PHOTO_BAG = 0x001;
+    private static final int TO_MODIFY_PHOTO_BAG = 0x002;
+    public static final String ENTITY_DATA = "entity_data";
+    private List<PhotoBagEntity> mDatas = new ArrayList<>();
     private int mPageSize = 10;
     private int mCurrentPage = 0;
     private ModelEntity mModelEntity;
@@ -47,9 +44,11 @@ public class PhotoListActivity extends BaseRefreshActivity {
         super.onCreate(savedInstanceState);
         setBarTitle("套图详情");
         setBarRight("添加", (View v) -> {
-            startActivityForResult(new Intent(mActivity, ModifyAdvActivity.class), TO_ADD_ADV);
+            Intent intent = new Intent(mActivity, ModifyBagActivity.class);
+            intent.putExtra(ModifyBagActivity.ENTITY_DATA, mModelEntity);
+            startActivityForResult(intent, TO_ADD_PHOTO_BAG);
         });
-        mModelEntity = (ModelEntity) getIntent().getSerializableExtra(MODEL_DATA);
+        mModelEntity = (ModelEntity) getIntent().getSerializableExtra(ENTITY_DATA);
         if (mModelEntity == null) {
             showMessage("找不到模特信息");
             onBackPressed();
@@ -64,21 +63,21 @@ public class PhotoListActivity extends BaseRefreshActivity {
         mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
-                AdvEntity entity = (AdvEntity) adapter.getData().get(position);
-                Intent intent = new Intent(mActivity, ModifyAdvActivity.class);
-                intent.putExtra(ModifyAdvActivity.TYPE, ModifyAdvActivity.TYPE_MODIFY);
-                intent.putExtra(ModifyAdvActivity.ENTITY_DATA, entity);
-                startActivityForResult(intent, TO_MODIFY_ADV);
+                PhotoBagEntity entity = (PhotoBagEntity) adapter.getData().get(position);
+                Intent intent = new Intent(mActivity, ModifyBagActivity.class);
+                intent.putExtra(ModifyBagActivity.TYPE, ModifyBagActivity.TYPE_MODIFY);
+                intent.putExtra(ModifyBagActivity.ENTITY_DATA, entity);
+                startActivityForResult(intent, TO_MODIFY_PHOTO_BAG);
             }
         });
         mRecyclerView.addOnItemTouchListener(new OnItemLongClickListener() {
             @Override
             public void onSimpleItemLongClick(BaseQuickAdapter adapter, View view, int position) {
-                AdvEntity entity = (AdvEntity) adapter.getData().get(position);
+                PhotoBagEntity entity = (PhotoBagEntity) adapter.getData().get(position);
                 new AlertDialog.Builder(mActivity)
-                        .setMessage("确定要删除 " + entity.getTitle() + " 这条广告吗？")
+                        .setMessage("确定要删除 " + entity.getTitle() + " 这套套图吗？")
                         .setPositiveButton("删除", (DialogInterface dialog, int which) -> {
-                            deleteAdvPic(entity);
+                            deletePhotoBagPic(entity);
                         })
                         .setNegativeButton("取消", (DialogInterface dialog, int which) -> {
                             dialog.dismiss();
@@ -88,21 +87,21 @@ public class PhotoListActivity extends BaseRefreshActivity {
         });
     }
 
-    private void deleteAdvPic(AdvEntity entity) {
-        BmobFile file = entity.getPic();
-        if (entity.getPic() != null && !TextUtils.isEmpty(entity.getPic().getUrl())) {
-            showDialog("正在删除广告图片...");
+    private void deletePhotoBagPic(PhotoBagEntity entity) {
+        BmobFile file = entity.getCoverPic();
+        if (entity.getCoverPic() != null && !TextUtils.isEmpty(entity.getCoverPic().getUrl())) {
+            showDialog("正在删除套图图片...");
             file.delete(new UpdateListener() {
                 @Override
                 public void done(BmobException e) {
                     if (e == null) {
                         closeDialog();
-                        deleteAdvEntity(entity);
+                        deletePhotoBagEntity(entity);
                     } else {
                         closeDialog();
                         if (151 == e.getErrorCode()) {
                             KLog.i(Constants.TAG, "找不到图片，删除失败");
-                            deleteAdvEntity(entity);
+                            deletePhotoBagEntity(entity);
                         } else {
                             BmobExceptionUtil.handler(e);
                         }
@@ -111,11 +110,11 @@ public class PhotoListActivity extends BaseRefreshActivity {
             });
             return;
         }
-        deleteAdvEntity(entity);
+        deletePhotoBagEntity(entity);
     }
 
-    private void deleteAdvEntity(final AdvEntity entity) {
-        showDialog("正在删除广告...");
+    private void deletePhotoBagEntity(final PhotoBagEntity entity) {
+        showDialog("正在删除套图信息...");
         entity.delete(new UpdateListener() {
 
             @Override
@@ -136,13 +135,13 @@ public class PhotoListActivity extends BaseRefreshActivity {
     @Override
     protected void startLoadMore(TwinklingRefreshLayout refreshLayout) {
         showDialog("玩命加载中...");
-        getAdvList(1, refreshLayout);
+        getPhotoBagList(1, refreshLayout);
     }
 
     @Override
     protected void startRefresh(TwinklingRefreshLayout refreshLayout) {
         showDialog("玩命加载中...");
-        getAdvList(0, refreshLayout);
+        getPhotoBagList(0, refreshLayout);
     }
 
     @Override
@@ -150,11 +149,11 @@ public class PhotoListActivity extends BaseRefreshActivity {
         super.initRecyclerView();
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         //添加分割线
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(mActivity, DividerItemDecoration.VERTICAL));
+//        mRecyclerView.addItemDecoration(new DividerItemDecoration(mActivity, DividerItemDecoration.VERTICAL));
     }
 
-    private void getAdvList(int type, TwinklingRefreshLayout refreshLayout) {
-        BmobQuery<AdvEntity> query = new BmobQuery<AdvEntity>();
+    private void getPhotoBagList(int type, TwinklingRefreshLayout refreshLayout) {
+        BmobQuery<PhotoBagEntity> query = new BmobQuery<PhotoBagEntity>();
         //返回50条数据，如果不加上这条语句，默认返回10条数据
         query.setLimit(mPageSize);
         switch (type) {
@@ -166,10 +165,10 @@ public class PhotoListActivity extends BaseRefreshActivity {
 //        query.order("-updatedAt");
         query.order("-createdAt");
         //执行查询方法
-        query.findObjects(new FindListener<AdvEntity>() {
+        query.findObjects(new FindListener<PhotoBagEntity>() {
 
             @Override
-            public void done(List<AdvEntity> object, BmobException e) {
+            public void done(List<PhotoBagEntity> object, BmobException e) {
                 if (e == null) {
                     if (object != null && object.size() > 0) {
                         switch (type) {
@@ -196,6 +195,9 @@ public class PhotoListActivity extends BaseRefreshActivity {
                     }
                 } else {
                     closeDialog();
+                    mDatas.clear();
+                    mDatas.add(new PhotoBagEntity());
+                    mAdapter.setNewData(mDatas);
                     BmobExceptionUtil.handler(e);
                 }
 
@@ -214,15 +216,15 @@ public class PhotoListActivity extends BaseRefreshActivity {
 
     @Override
     public BaseQuickAdapter initAdapter() {
-        return new AdvAdapter(mDatas);
+        return new PhotoBagAdapter(mDatas);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case TO_ADD_ADV:
-            case TO_MODIFY_ADV:
+            case TO_ADD_PHOTO_BAG:
+            case TO_MODIFY_PHOTO_BAG:
                 if (resultCode == RESULT_OK) {
                     mRefreshLayout.startRefresh();
                 }

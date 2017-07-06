@@ -1,23 +1,17 @@
-package me.sheepyang.tuiserver.activity.model;
+package me.sheepyang.tuiserver.activity.photos.bag;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.EncryptUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
-import com.blankj.utilcode.util.RegexUtils;
 import com.bumptech.glide.load.MultiTransformation;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.luck.picture.lib.PictureSelector;
@@ -28,15 +22,11 @@ import com.luck.picture.lib.entity.LocalMedia;
 import com.socks.library.KLog;
 
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.datatype.BmobDate;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
@@ -44,7 +34,6 @@ import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseActivity;
-import me.sheepyang.tuiserver.activity.photos.bag.BagListActivity;
 import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.model.bmobentity.ModelEntity;
 import me.sheepyang.tuiserver.utils.AppUtil;
@@ -56,7 +45,7 @@ import me.sheepyang.tuiserver.widget.QBar;
 
 import static com.luck.picture.lib.config.PictureConfig.LUBAN_COMPRESS_MODE;
 
-public class ModifyModelActivity extends BaseActivity implements View.OnClickListener {
+public class ModifyBagActivity extends BaseActivity implements View.OnClickListener {
     public static final String TYPE_MODIFY = "type_modify";
     public static final String TYPE_ADD = "type_add";
     public static final String TYPE = "type";
@@ -64,42 +53,24 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
     private static final int TO_PHOTO_LIST = 0x001;
     @BindView(R.id.QBar)
     QBar mQBar;
-    @BindView(R.id.iv_avatar)
-    ImageView mIvAvatar;
-    @BindView(R.id.edt_nick)
-    EditText mEdtNick;
-    @BindView(R.id.edt_cup)
-    EditText mEdtCup;
-    @BindView(R.id.edt_bust_size)
-    EditText mEdtBustSize;
-    @BindView(R.id.edt_waist_size)
-    EditText mEdtWaistSize;
-    @BindView(R.id.edt_hip_size)
-    EditText mEdtHipSize;
-    @BindView(R.id.edt_weight)
-    EditText mEdtWeight;
-    @BindView(R.id.edt_birthday)
-    EditText mEdtBirthday;
-    @BindView(R.id.edt_account)
-    EditText mEdtAccount;
-    @BindView(R.id.edt_password)
-    EditText mEdtPassword;
-    @BindView(R.id.rbtn_sex_man)
-    RadioButton mRbtnSexMan;
-    @BindView(R.id.rbtn_sex_woman)
-    RadioButton mRbtnSexWoman;
-    @BindView(R.id.rg_sex)
-    RadioGroup mRgSex;
-    @BindView(R.id.cb_is_show)
-    CheckBox mCbIsShow;
-    @BindView(R.id.btn_all_photos)
-    Button mBtnAllPhotos;
+    @BindView(R.id.tv_name)
+    TextView mTvName;
     @BindView(R.id.tv_sex)
     TextView mTvSex;
-    @BindView(R.id.tv_account)
-    TextView mTvAccount;
-    @BindView(R.id.tv_password)
-    TextView mTvPassword;
+    @BindView(R.id.tv_tz_sw)
+    TextView mTvTzSw;
+    @BindView(R.id.tv_birthday)
+    TextView mTvBirthday;
+    @BindView(R.id.tv_is_show)
+    TextView mTvIsShow;
+    @BindView(R.id.tv_cup)
+    TextView mTvCup;
+    @BindView(R.id.tv_weight)
+    TextView mTvWeight;
+    @BindView(R.id.tv_total_photos)
+    TextView mTvTotalPhotos;
+    @BindView(R.id.iv_avatar)
+    ImageView mIvAvatar;
     private List<LocalMedia> mImageSelectList = new ArrayList<>();
     private boolean mIsNeedDeleteBmobImage;
     private String mType;
@@ -108,7 +79,7 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public int setLayoutId() {
-        return R.layout.activity_modify_model;
+        return R.layout.activity_modify_photo_bag;
     }
 
     @Override
@@ -127,116 +98,137 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
 
     private void initData() {
         if (mModelEntity != null) {
-            mEdtNick.setText(mModelEntity.getNick());
-            mEdtCup.setText(mModelEntity.getCupSize());
-            mEdtBustSize.setText(mModelEntity.getBustSize());
-            mEdtWaistSize.setText(mModelEntity.getWaistSize());
-            mEdtHipSize.setText(mModelEntity.getHipSize());
-            mEdtWeight.setText(mModelEntity.getWeight());
-            mEdtBirthday.setText(DateUtil.getStringByFormat(mModelEntity.getBirthday().getDate(), DateUtil.dateFormatYMD));
-            switch (mModelEntity.getSex()) {
-                case 1:
-                    mRgSex.check(R.id.rbtn_sex_man);
-                    break;
-                case 2:
-                    mRgSex.check(R.id.rbtn_sex_woman);
-                    break;
-            }
-            mCbIsShow.setChecked(mModelEntity.getShow());
-            if (mModelEntity.getAvatar() != null && !TextUtils.isEmpty(mModelEntity.getAvatar().getFileUrl())) {
-                GlideApp.with(mActivity)
-                        .load(mModelEntity.getAvatar().getFileUrl())
-                        .transform(new MultiTransformation<>(new CenterCrop(), new GlideCircleTransform(mActivity)))
-                        .into(mIvAvatar);
-            }
+
         }
     }
 
     private void initIntent(Intent intent) {
+        mModelEntity = (ModelEntity) intent.getSerializableExtra(ENTITY_DATA);
+        if (mModelEntity == null) {
+            showMessage("找不到模特信息");
+            onBackPressed();
+            return;
+        }
+        KLog.i(Constants.TAG
+                , "昵称:" + mModelEntity.getNick()
+                , "罩杯:" + mModelEntity.getCupSize()
+                , "胸围:" + mModelEntity.getBustSize()
+                , "腰围:" + mModelEntity.getWaistSize()
+                , "臀围:" + mModelEntity.getHipSize()
+                , "体重:" + mModelEntity.getWeight()
+                , "生日:" + mModelEntity.getBirthday().getDate()
+                , "性别:" + (mModelEntity.getSex() == 1 ? "男" : "女")
+                , "是否立即显示:" + mModelEntity.getShow()
+                , "手机号码:" + mModelEntity.getMobilePhoneNumber()
+        );
         mType = intent.getStringExtra(TYPE);
         if (TextUtils.isEmpty(mType)) {
             mType = TYPE_ADD;
         }
+
+        mTvName.setText("昵称:" + mModelEntity.getNick());
+        switch (mModelEntity.getSex()) {
+            case 1:
+                mTvSex.setText("性别:男");
+                break;
+            case 2:
+                mTvSex.setText("性别:女");
+                break;
+        }
+
+        StringBuilder tz_sw = new StringBuilder();
+        tz_sw.append("三围:");
+        if (!TextUtils.isEmpty(mModelEntity.getBustSize())) {
+            tz_sw.append(mModelEntity.getBustSize());
+        } else {
+            tz_sw.append("0");
+        }
+        if (!TextUtils.isEmpty(mModelEntity.getWaistSize())) {
+            tz_sw.append("-" + mModelEntity.getWaistSize());
+        } else {
+            tz_sw.append("-0");
+        }
+        if (!TextUtils.isEmpty(mModelEntity.getHipSize())) {
+            tz_sw.append("-" + mModelEntity.getHipSize());
+        } else {
+            tz_sw.append("-0");
+        }
+
+        mTvTzSw.setText(tz_sw);
+        mTvBirthday.setText("生日:" + DateUtil.getStringByFormat(mModelEntity.getBirthday().getDate(), DateUtil.dateFormatYMD));
+        mTvIsShow.setText(mModelEntity.getShow() ? "正在展示" : "未展示");
+        mTvCup.setText("罩杯:" + mModelEntity.getCupSize());
+        if (mModelEntity.getWeight() != null) {
+            mTvWeight.setText("体重:" + mModelEntity.getWeight() + "KG");
+        } else {
+            mTvWeight.setText("体重:0KG");
+        }
+        if (mModelEntity.getPhotoBagList() != null && mModelEntity.getPhotoBagList().size() > 0) {
+            mTvTotalPhotos.setText("套图:" + mModelEntity.getPhotoBagList().size() + "套");
+        } else {
+            mTvTotalPhotos.setText("套图:0套");
+        }
+
+        String avatar = "";
+        if (mModelEntity.getAvatar() != null && !TextUtils.isEmpty(mModelEntity.getAvatar().getFileUrl())) {
+            avatar = mModelEntity.getAvatar().getFileUrl();
+        }
+        GlideApp.with(mActivity)
+                .load(avatar)
+                .placeholder(R.drawable.ico_user_avatar)
+                .transform(new MultiTransformation<>(new CenterCrop(), new GlideCircleTransform(mActivity)))
+                .into(mIvAvatar);
+
+
         if (TYPE_MODIFY.equals(mType)) {
-            mModelEntity = (ModelEntity) intent.getSerializableExtra(ENTITY_DATA);
-            if (mModelEntity == null) {
-                showMessage("找不到模特信息");
-                onBackPressed();
-                return;
-            }
-            KLog.i(Constants.TAG
-                    , "昵称:" + mModelEntity.getNick()
-                    , "罩杯:" + mModelEntity.getCupSize()
-                    , "胸围:" + mModelEntity.getBustSize()
-                    , "腰围:" + mModelEntity.getWaistSize()
-                    , "臀围:" + mModelEntity.getHipSize()
-                    , "体重:" + mModelEntity.getWeight()
-                    , "生日:" + mModelEntity.getBirthday().getDate()
-                    , "性别:" + (mModelEntity.getSex() == 1 ? "男" : "女")
-                    , "是否立即显示:" + mModelEntity.getShow()
-                    , "手机号码:" + mModelEntity.getMobilePhoneNumber()
-            );
-            mQBar.setTitle("模特详情");
+            mQBar.setTitle("套图详情");
             mQBar.setRightText("修改");
-            mTvAccount.setVisibility(View.GONE);
-            mEdtAccount.setVisibility(View.GONE);
-            mTvPassword.setVisibility(View.GONE);
-            mEdtPassword.setVisibility(View.GONE);
-            mBtnAllPhotos.setVisibility(View.VISIBLE);
-
-            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) mTvSex.getLayoutParams();
-            lp.topToBottom = R.id.edt_birthday;
-            mTvSex.setLayoutParams(lp);
-
-            ConstraintLayout.LayoutParams lp2 = (ConstraintLayout.LayoutParams) mRgSex.getLayoutParams();
-            lp2.topToBottom = R.id.edt_birthday;
-            mRgSex.setLayoutParams(lp2);
         }
     }
 
     private void initListener() {
-        mIvAvatar.setOnLongClickListener((View v) -> {
-            if (mImageSelectList != null && mImageSelectList.size() > 0) {
-                String msg = "";
-                if (!TextUtils.isEmpty(mEdtNick.getText().toString())) {
-                    msg = mEdtNick.getText().toString();
-                } else if (mModelEntity != null) {
-                    msg = mModelEntity.getNick();
-                }
-                new AlertDialog.Builder(mActivity)
-                        .setMessage("确定要删除 " + msg + " 的头像吗？")
-                        .setPositiveButton("删除", (DialogInterface dialog, int which) -> {
-                            showDialog("正在删除头像");
-                            mImageSelectList = new ArrayList<LocalMedia>();
-                            GlideApp.with(mActivity)
-                                    .load("")
-                                    .centerCrop()
-                                    .placeholder(R.drawable.ico_user_avatar)
-                                    .into(mIvAvatar);
-                            closeDialog();
-                        })
-                        .setNegativeButton("取消", (DialogInterface dialog, int which) -> {
-                            dialog.dismiss();
-                        })
-                        .show();
-            } else if (mModelEntity != null && mModelEntity.getAvatar() != null && !TextUtils.isEmpty(mModelEntity.getAvatar().getFileUrl())) {
-                new AlertDialog.Builder(mActivity)
-                        .setMessage("确定要删除 " + mModelEntity.getNick() + " 的头像吗？")
-                        .setPositiveButton("删除", (DialogInterface dialog, int which) -> {
-                            mIsNeedDeleteBmobImage = true;
-                            GlideApp.with(mActivity)
-                                    .load("")
-                                    .placeholder(R.drawable.ico_user_avatar)
-                                    .centerCrop()
-                                    .into(mIvAvatar);
-                        })
-                        .setNegativeButton("取消", (DialogInterface dialog, int which) -> {
-                            dialog.dismiss();
-                        })
-                        .show();
-            }
-            return true;
-        });
+//        mIvAvatar.setOnLongClickListener((View v) -> {
+//            if (mImageSelectList != null && mImageSelectList.size() > 0) {
+//                String msg = "";
+//                if (!TextUtils.isEmpty(mEdtNick.getText().toString())) {
+//                    msg = mEdtNick.getText().toString();
+//                } else if (mModelEntity != null) {
+//                    msg = mModelEntity.getNick();
+//                }
+//                new AlertDialog.Builder(mActivity)
+//                        .setMessage("确定要删除 " + msg + " 的头像吗？")
+//                        .setPositiveButton("删除", (DialogInterface dialog, int which) -> {
+//                            showDialog("正在删除头像");
+//                            mImageSelectList = new ArrayList<LocalMedia>();
+//                            GlideApp.with(mActivity)
+//                                    .load("")
+//                                    .centerCrop()
+//                                    .placeholder(R.drawable.ico_user_avatar)
+//                                    .into(mIvAvatar);
+//                            closeDialog();
+//                        })
+//                        .setNegativeButton("取消", (DialogInterface dialog, int which) -> {
+//                            dialog.dismiss();
+//                        })
+//                        .show();
+//            } else if (mModelEntity != null && mModelEntity.getAvatar() != null && !TextUtils.isEmpty(mModelEntity.getAvatar().getFileUrl())) {
+//                new AlertDialog.Builder(mActivity)
+//                        .setMessage("确定要删除 " + mModelEntity.getNick() + " 的头像吗？")
+//                        .setPositiveButton("删除", (DialogInterface dialog, int which) -> {
+//                            mIsNeedDeleteBmobImage = true;
+//                            GlideApp.with(mActivity)
+//                                    .load("")
+//                                    .placeholder(R.drawable.ico_user_avatar)
+//                                    .centerCrop()
+//                                    .into(mIvAvatar);
+//                        })
+//                        .setNegativeButton("取消", (DialogInterface dialog, int which) -> {
+//                            dialog.dismiss();
+//                        })
+//                        .show();
+//            }
+//            return true;
+//        });
         if (TYPE_MODIFY.equals(mType)) {
             mQBar.setOnRightClickListener((View v) -> {
                 mEdtConfirmPassword.setText("");
@@ -266,111 +258,111 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void modifyModel(ModelEntity entity, String password) {
-        KeyboardUtils.hideSoftInput(mActivity);
-        if (TextUtils.isEmpty(password)) {
-            showMessage("请输入密码");
-            return;
-        }
-        ModelEntity bu2 = new ModelEntity();
-        bu2.setUsername(entity.getUsername());
-        bu2.setPassword(password);
-        showDialog("正在登录模特账号");
-        toLogin(bu2, new SaveListener<BmobUser>() {
-
-            @Override
-            public void done(BmobUser bmobUser, BmobException e) {
-                closeDialog();
-                if (e == null) {
-                    //通过BmobUser user = BmobUser.getCurrentUser()获取登录成功后的本地用户信息
-                    //如果是自定义用户对象MyUser，可通过MyUser user = BmobUser.getCurrentUser(MyUser.class)获取自定义用户信息
-
-                    String nick = mEdtNick.getText().toString();
-                    String cupSize = mEdtCup.getText().toString();
-                    String bustSize = mEdtBustSize.getText().toString();
-                    String waistSize = mEdtWaistSize.getText().toString();
-                    String hipSize = mEdtHipSize.getText().toString();
-                    String weight = mEdtWeight.getText().toString();
-                    String birthday = mEdtBirthday.getText().toString();
-                    if (TextUtils.isEmpty(nick)) {
-                        showMessage("请输入昵称");
-                        return;
-                    }
-                    if (TextUtils.isEmpty(cupSize)) {
-                        showMessage("请输入罩杯");
-                        return;
-                    }
-                    if (TextUtils.isEmpty(bustSize)) {
-                        showMessage("请输入胸围");
-                        return;
-                    }
-                    if (TextUtils.isEmpty(waistSize)) {
-                        showMessage("请输入腰围");
-                        return;
-                    }
-                    if (TextUtils.isEmpty(hipSize)) {
-                        showMessage("请输入臀围");
-                        return;
-                    }
-                    if (TextUtils.isEmpty(weight)) {
-                        showMessage("请输入体重");
-                        return;
-                    }
-                    if (TextUtils.isEmpty(birthday)) {
-                        showMessage("请输入生日");
-                        return;
-                    }
-
-                    entity.setNick(nick);
-                    entity.setCupSize(cupSize);
-                    entity.setBustSize(bustSize);
-                    entity.setWaistSize(waistSize);
-                    entity.setHipSize(hipSize);
-                    entity.setWeight(weight);
-
-                    try {
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                        entity.setBirthday(new BmobDate(sdf.parse(birthday)));
-                    } catch (ParseException e1) {
-                        showMessage("生日格式不正确");
-                        e1.printStackTrace();
-                        return;
-                    }
-
-                    switch (mRgSex.getCheckedRadioButtonId()) {
-                        //性别 1男；2女；
-                        case R.id.rbtn_sex_man:
-                            entity.setSex(1);
-                            break;
-                        case R.id.rbtn_sex_woman:
-                            entity.setSex(2);
-                            break;
-                        default:
-                            entity.setSex(1);
-                            break;
-                    }
-                    entity.setShow(mCbIsShow.isChecked());
-                    KLog.e();
-                    modifyModelImage(entity, new OnModifyModelImageListener() {
-                        @Override
-                        public void onSuccess(ModelEntity entity) {
-                            KLog.e();
-                            updateModelEntity(entity);
-                        }
-
-                        @Override
-                        public void onError(BmobException e) {
-                            KLog.e();
-                            closeDialog();
-                            AppUtil.logout();
-                            BmobExceptionUtil.handler(e);
-                        }
-                    });
-                } else {
-                    AppUtil.logout();
-                    BmobExceptionUtil.handler(e);
-                }
-            }
-        });
+//        KeyboardUtils.hideSoftInput(mActivity);
+//        if (TextUtils.isEmpty(password)) {
+//            showMessage("请输入密码");
+//            return;
+//        }
+//        ModelEntity bu2 = new ModelEntity();
+//        bu2.setUsername(entity.getUsername());
+//        bu2.setPassword(password);
+//        showDialog("正在登录模特账号");
+//        toLogin(bu2, new SaveListener<BmobUser>() {
+//
+//            @Override
+//            public void done(BmobUser bmobUser, BmobException e) {
+//                closeDialog();
+//                if (e == null) {
+//                    //通过BmobUser user = BmobUser.getCurrentUser()获取登录成功后的本地用户信息
+//                    //如果是自定义用户对象MyUser，可通过MyUser user = BmobUser.getCurrentUser(MyUser.class)获取自定义用户信息
+//
+//                    String nick = mEdtNick.getText().toString();
+//                    String cupSize = mEdtCup.getText().toString();
+//                    String bustSize = mEdtBustSize.getText().toString();
+//                    String waistSize = mEdtWaistSize.getText().toString();
+//                    String hipSize = mEdtHipSize.getText().toString();
+//                    String weight = mEdtWeight.getText().toString();
+//                    String birthday = mEdtBirthday.getText().toString();
+//                    if (TextUtils.isEmpty(nick)) {
+//                        showMessage("请输入昵称");
+//                        return;
+//                    }
+//                    if (TextUtils.isEmpty(cupSize)) {
+//                        showMessage("请输入罩杯");
+//                        return;
+//                    }
+//                    if (TextUtils.isEmpty(bustSize)) {
+//                        showMessage("请输入胸围");
+//                        return;
+//                    }
+//                    if (TextUtils.isEmpty(waistSize)) {
+//                        showMessage("请输入腰围");
+//                        return;
+//                    }
+//                    if (TextUtils.isEmpty(hipSize)) {
+//                        showMessage("请输入臀围");
+//                        return;
+//                    }
+//                    if (TextUtils.isEmpty(weight)) {
+//                        showMessage("请输入体重");
+//                        return;
+//                    }
+//                    if (TextUtils.isEmpty(birthday)) {
+//                        showMessage("请输入生日");
+//                        return;
+//                    }
+//
+//                    entity.setNick(nick);
+//                    entity.setCupSize(cupSize);
+//                    entity.setBustSize(bustSize);
+//                    entity.setWaistSize(waistSize);
+//                    entity.setHipSize(hipSize);
+//                    entity.setWeight(weight);
+//
+//                    try {
+//                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//                        entity.setBirthday(new BmobDate(sdf.parse(birthday)));
+//                    } catch (ParseException e1) {
+//                        showMessage("生日格式不正确");
+//                        e1.printStackTrace();
+//                        return;
+//                    }
+//
+//                    switch (mRgSex.getCheckedRadioButtonId()) {
+//                        //性别 1男；2女；
+//                        case R.id.rbtn_sex_man:
+//                            entity.setSex(1);
+//                            break;
+//                        case R.id.rbtn_sex_woman:
+//                            entity.setSex(2);
+//                            break;
+//                        default:
+//                            entity.setSex(1);
+//                            break;
+//                    }
+//                    entity.setShow(mCbIsShow.isChecked());
+//                    KLog.e();
+//                    modifyModelImage(entity, new OnModifyModelImageListener() {
+//                        @Override
+//                        public void onSuccess(ModelEntity entity) {
+//                            KLog.e();
+//                            updateModelEntity(entity);
+//                        }
+//
+//                        @Override
+//                        public void onError(BmobException e) {
+//                            KLog.e();
+//                            closeDialog();
+//                            AppUtil.logout();
+//                            BmobExceptionUtil.handler(e);
+//                        }
+//                    });
+//                } else {
+//                    AppUtil.logout();
+//                    BmobExceptionUtil.handler(e);
+//                }
+//            }
+//        });
     }
 
     private void toLogin(ModelEntity entity, SaveListener listener) {
@@ -401,9 +393,9 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
                     showMessage("模特修改成功");
                     AppUtil.logout();
                     setResult(RESULT_OK);
-                    mIvAvatar.postDelayed(() -> {
-                        onBackPressed();
-                    }, 500);
+//                    mIvAvatar.postDelayed(() -> {
+//                        onBackPressed();
+//                    }, 500);
                 } else {
                     AppUtil.logout();
                     BmobExceptionUtil.handler(e);
@@ -539,132 +531,132 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
 
     private void addModel() {
         KeyboardUtils.hideSoftInput(mActivity);
-        String nick = mEdtNick.getText().toString();
-        String cupSize = mEdtCup.getText().toString();
-        String bustSize = mEdtBustSize.getText().toString();
-        String waistSize = mEdtWaistSize.getText().toString();
-        String hipSize = mEdtHipSize.getText().toString();
-        String weight = mEdtWeight.getText().toString();
-        String birthday = mEdtBirthday.getText().toString();
-        String account = mEdtAccount.getText().toString();
-        String password = mEdtPassword.getText().toString();
-        if (TextUtils.isEmpty(nick)) {
-            showMessage("请输入昵称");
-            return;
-        }
-        if (TextUtils.isEmpty(cupSize)) {
-            showMessage("请输入罩杯");
-            return;
-        }
-        if (TextUtils.isEmpty(bustSize)) {
-            showMessage("请输入胸围");
-            return;
-        }
-        if (TextUtils.isEmpty(waistSize)) {
-            showMessage("请输入腰围");
-            return;
-        }
-        if (TextUtils.isEmpty(hipSize)) {
-            showMessage("请输入臀围");
-            return;
-        }
-        if (TextUtils.isEmpty(weight)) {
-            showMessage("请输入体重");
-            return;
-        }
-        if (TextUtils.isEmpty(birthday)) {
-            showMessage("请输入生日");
-            return;
-        }
-        if (TextUtils.isEmpty(account)) {
-            showMessage("请输入登录手机号");
-            return;
-        }
-        if (!RegexUtils.isMobileExact(account)) {
-            showMessage("手机号码格式不正确");
-            return;
-        }
-        if (TextUtils.isEmpty(password)) {
-            showMessage("请输入密码");
-            return;
-        }
-
-        ModelEntity entity = new ModelEntity();
-        entity.setLevel(2);
-        entity.setNick(nick);
-        entity.setCupSize(cupSize);
-        entity.setBustSize(bustSize);
-        entity.setWaistSize(waistSize);
-        entity.setHipSize(hipSize);
-        entity.setWeight(weight);
-
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            entity.setBirthday(new BmobDate(sdf.parse(birthday)));
-        } catch (ParseException e) {
-            showMessage("生日格式不正确");
-            e.printStackTrace();
-            return;
-        }
-
-        entity.setUsername(account);
-        entity.setMobilePhoneNumber(account);
-        password = EncryptUtils.encryptMD5ToString(password).toLowerCase();
-        entity.setPassword(password);
-        switch (mRgSex.getCheckedRadioButtonId()) {
-            //性别 1男；2女；
-            case R.id.rbtn_sex_man:
-                entity.setSex(1);
-                break;
-            case R.id.rbtn_sex_woman:
-                entity.setSex(2);
-                break;
-            default:
-                entity.setSex(1);
-                break;
-        }
-        entity.setShow(mCbIsShow.isChecked());
-
-        // 例如 LocalMedia 里面返回三种path
-        // 1.media.getPath(); 为原图path
-        // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true
-        // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true
-        // 如果裁剪并压缩了，以取压缩路径为准，因为是先裁剪后压缩的
-        if (mImageSelectList != null && mImageSelectList.size() > 0) {
-            LocalMedia media = mImageSelectList.get(0);
-            if (media != null && media.isCompressed()) {
-                KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
-                BmobFile bmobFile = new BmobFile(new File(media.getCompressPath()));
-                entity.setAvatar(bmobFile);
-                showDialog("正在上传头像...");
-                uploadPic(bmobFile, new UploadFileListener() {
-
-                    @Override
-                    public void done(BmobException e) {
-                        if (e == null) {
-                            closeDialog();
-                            //bmobFile.getFileUrl()--返回的上传文件的完整地址
-                            KLog.i(Constants.TAG, "上传文件成功:" + bmobFile.getFileUrl());
-                            saveModelEntity(entity);
-                        } else {
-                            closeDialog();
-                            BmobExceptionUtil.handler(e);
-                        }
-                    }
-
-                    @Override
-                    public void onProgress(Integer value) {
-                        // 返回的上传进度（百分比）
-                    }
-                });
-                return;
-            } else {
-                showMessage("图片选取失败，请重新选择图片");
-                mImageSelectList = new ArrayList<>();
-                return;
-            }
-        }
-        saveModelEntity(entity);
+//        String nick = mEdtNick.getText().toString();
+//        String cupSize = mEdtCup.getText().toString();
+//        String bustSize = mEdtBustSize.getText().toString();
+//        String waistSize = mEdtWaistSize.getText().toString();
+//        String hipSize = mEdtHipSize.getText().toString();
+//        String weight = mEdtWeight.getText().toString();
+//        String birthday = mEdtBirthday.getText().toString();
+//        String account = mEdtAccount.getText().toString();
+//        String password = mEdtPassword.getText().toString();
+//        if (TextUtils.isEmpty(nick)) {
+//            showMessage("请输入昵称");
+//            return;
+//        }
+//        if (TextUtils.isEmpty(cupSize)) {
+//            showMessage("请输入罩杯");
+//            return;
+//        }
+//        if (TextUtils.isEmpty(bustSize)) {
+//            showMessage("请输入胸围");
+//            return;
+//        }
+//        if (TextUtils.isEmpty(waistSize)) {
+//            showMessage("请输入腰围");
+//            return;
+//        }
+//        if (TextUtils.isEmpty(hipSize)) {
+//            showMessage("请输入臀围");
+//            return;
+//        }
+//        if (TextUtils.isEmpty(weight)) {
+//            showMessage("请输入体重");
+//            return;
+//        }
+//        if (TextUtils.isEmpty(birthday)) {
+//            showMessage("请输入生日");
+//            return;
+//        }
+//        if (TextUtils.isEmpty(account)) {
+//            showMessage("请输入登录手机号");
+//            return;
+//        }
+//        if (!RegexUtils.isMobileExact(account)) {
+//            showMessage("手机号码格式不正确");
+//            return;
+//        }
+//        if (TextUtils.isEmpty(password)) {
+//            showMessage("请输入密码");
+//            return;
+//        }
+//
+//        ModelEntity entity = new ModelEntity();
+//        entity.setLevel(2);
+//        entity.setNick(nick);
+//        entity.setCupSize(cupSize);
+//        entity.setBustSize(bustSize);
+//        entity.setWaistSize(waistSize);
+//        entity.setHipSize(hipSize);
+//        entity.setWeight(weight);
+//
+//        try {
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//            entity.setBirthday(new BmobDate(sdf.parse(birthday)));
+//        } catch (ParseException e) {
+//            showMessage("生日格式不正确");
+//            e.printStackTrace();
+//            return;
+//        }
+//
+//        entity.setUsername(account);
+//        entity.setMobilePhoneNumber(account);
+//        password = EncryptUtils.encryptMD5ToString(password).toLowerCase();
+//        entity.setPassword(password);
+//        switch (mRgSex.getCheckedRadioButtonId()) {
+//            //性别 1男；2女；
+//            case R.id.rbtn_sex_man:
+//                entity.setSex(1);
+//                break;
+//            case R.id.rbtn_sex_woman:
+//                entity.setSex(2);
+//                break;
+//            default:
+//                entity.setSex(1);
+//                break;
+//        }
+//        entity.setShow(mCbIsShow.isChecked());
+//
+//        // 例如 LocalMedia 里面返回三种path
+//        // 1.media.getPath(); 为原图path
+//        // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true
+//        // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true
+//        // 如果裁剪并压缩了，以取压缩路径为准，因为是先裁剪后压缩的
+//        if (mImageSelectList != null && mImageSelectList.size() > 0) {
+//            LocalMedia media = mImageSelectList.get(0);
+//            if (media != null && media.isCompressed()) {
+//                KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
+//                BmobFile bmobFile = new BmobFile(new File(media.getCompressPath()));
+//                entity.setAvatar(bmobFile);
+//                showDialog("正在上传头像...");
+//                uploadPic(bmobFile, new UploadFileListener() {
+//
+//                    @Override
+//                    public void done(BmobException e) {
+//                        if (e == null) {
+//                            closeDialog();
+//                            //bmobFile.getFileUrl()--返回的上传文件的完整地址
+//                            KLog.i(Constants.TAG, "上传文件成功:" + bmobFile.getFileUrl());
+//                            saveModelEntity(entity);
+//                        } else {
+//                            closeDialog();
+//                            BmobExceptionUtil.handler(e);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onProgress(Integer value) {
+//                        // 返回的上传进度（百分比）
+//                    }
+//                });
+//                return;
+//            } else {
+//                showMessage("图片选取失败，请重新选择图片");
+//                mImageSelectList = new ArrayList<>();
+//                return;
+//            }
+//        }
+//        saveModelEntity(entity);
     }
 
     private void saveModelEntity(ModelEntity entity) {
@@ -687,9 +679,9 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
                 if (e == null) {
                     showMessage("模特添加成功");
                     setResult(RESULT_OK);
-                    mIvAvatar.postDelayed(() -> {
-                        onBackPressed();
-                    }, 500);
+//                    mIvAvatar.postDelayed(() -> {
+//                        onBackPressed();
+//                    }, 500);
                 } else {
                     closeDialog();
                     BmobExceptionUtil.handler(e);
@@ -703,7 +695,7 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
     }
 
     @Override
-    @OnClick({R.id.iv_avatar, R.id.btn_select_avatar, R.id.btn_all_photos})
+    @OnClick({/*R.id.iv_avatar, R.id.btn_select_avatar, R.id.btn_all_photos*/})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_avatar:
@@ -785,10 +777,10 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
                                 mIsNeedDeleteBmobImage = true;
                             }
                             KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
-                            GlideApp.with(mActivity)
-                                    .load(media.getCompressPath())
-                                    .transform(new MultiTransformation<>(new CenterCrop(), new GlideCircleTransform(mActivity)))
-                                    .into(mIvAvatar);
+//                            GlideApp.with(mActivity)
+//                                    .load(media.getCompressPath())
+//                                    .transform(new MultiTransformation<>(new CenterCrop(), new GlideCircleTransform(mActivity)))
+//                                    .into(mIvAvatar);
                         } else {
                             showMessage("图片选取失败");
                             mImageSelectList = new ArrayList<>();

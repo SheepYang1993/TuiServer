@@ -25,6 +25,7 @@ import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
 import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
+import me.sheepyang.tuiserver.activity.photos.bag.BagListActivity;
 import me.sheepyang.tuiserver.adapter.ModelAdapter;
 import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.model.bmobentity.ModelEntity;

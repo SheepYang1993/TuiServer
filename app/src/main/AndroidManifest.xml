@@ -64,7 +64,10 @@
             android:name=".activity.model.ModifyModelActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".activity.photos.PhotoListActivity"
+            android:name=".activity.photos.bag.BagListActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.photos.bag.ModifyBagActivity"
             android:screenOrientation="portrait"/>
     </application>
 
