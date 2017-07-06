@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,6 +37,7 @@ import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseActivity;
 import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.model.bmobentity.ModelEntity;
+import me.sheepyang.tuiserver.model.bmobentity.PhotoBagEntity;
 import me.sheepyang.tuiserver.utils.AppUtil;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 import me.sheepyang.tuiserver.utils.DateUtil;
@@ -71,6 +73,24 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
     TextView mTvTotalPhotos;
     @BindView(R.id.iv_avatar)
     ImageView mIvAvatar;
+    @BindView(R.id.iv_image)
+    ImageView mIvImage;
+    @BindView(R.id.edt_title)
+    EditText mEdtTitle;
+    @BindView(R.id.edt_desc)
+    EditText mEdtDesc;
+    @BindView(R.id.edt_label)
+    EditText mEdtLabel;
+    @BindView(R.id.edt_see_base_num)
+    EditText mEdtSeeBaseNum;
+    @BindView(R.id.edt_collect_base_num)
+    EditText mEdtCollectBaseNum;
+    @BindView(R.id.cb_is_vip)
+    CheckBox mCbIsVip;
+    @BindView(R.id.cb_is_blur)
+    CheckBox mCbIsBlur;
+    @BindView(R.id.cb_is_show)
+    CheckBox mCbIsShow;
     private List<LocalMedia> mImageSelectList = new ArrayList<>();
     private boolean mIsNeedDeleteBmobImage;
     private String mType;
@@ -252,7 +272,7 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
             });
         } else {
             mQBar.setOnRightClickListener((View v) -> {
-                addModel();
+                addPhotoBag();
             });
         }
     }
@@ -427,7 +447,7 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
                 if (media != null && media.isCompressed()) {
                     KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
                     BmobFile bmobFile = new BmobFile(new File(media.getCompressPath()));
-                    showDialog("正在上传头像...");
+                    showDialog("正在上传封面...");
                     uploadPic(bmobFile, new UploadFileListener() {
 
                         @Override
@@ -464,7 +484,7 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
             KLog.e();
             if (mIsNeedDeleteBmobImage) {
                 mIsNeedDeleteBmobImage = false;
-                showDialog("正在修改头像...");
+                showDialog("正在修改封面...");
                 deleteModelPic(entity, new UpdateListener() {
                     @Override
                     public void done(BmobException e) {
@@ -529,152 +549,105 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         void onError(BmobException e);
     }
 
-    private void addModel() {
+    private void addPhotoBag() {
         KeyboardUtils.hideSoftInput(mActivity);
-//        String nick = mEdtNick.getText().toString();
-//        String cupSize = mEdtCup.getText().toString();
-//        String bustSize = mEdtBustSize.getText().toString();
-//        String waistSize = mEdtWaistSize.getText().toString();
-//        String hipSize = mEdtHipSize.getText().toString();
-//        String weight = mEdtWeight.getText().toString();
-//        String birthday = mEdtBirthday.getText().toString();
-//        String account = mEdtAccount.getText().toString();
-//        String password = mEdtPassword.getText().toString();
-//        if (TextUtils.isEmpty(nick)) {
-//            showMessage("请输入昵称");
-//            return;
-//        }
-//        if (TextUtils.isEmpty(cupSize)) {
-//            showMessage("请输入罩杯");
-//            return;
-//        }
-//        if (TextUtils.isEmpty(bustSize)) {
-//            showMessage("请输入胸围");
-//            return;
-//        }
-//        if (TextUtils.isEmpty(waistSize)) {
-//            showMessage("请输入腰围");
-//            return;
-//        }
-//        if (TextUtils.isEmpty(hipSize)) {
-//            showMessage("请输入臀围");
-//            return;
-//        }
-//        if (TextUtils.isEmpty(weight)) {
-//            showMessage("请输入体重");
-//            return;
-//        }
-//        if (TextUtils.isEmpty(birthday)) {
-//            showMessage("请输入生日");
-//            return;
-//        }
-//        if (TextUtils.isEmpty(account)) {
-//            showMessage("请输入登录手机号");
-//            return;
-//        }
-//        if (!RegexUtils.isMobileExact(account)) {
-//            showMessage("手机号码格式不正确");
-//            return;
-//        }
-//        if (TextUtils.isEmpty(password)) {
-//            showMessage("请输入密码");
-//            return;
-//        }
-//
-//        ModelEntity entity = new ModelEntity();
-//        entity.setLevel(2);
-//        entity.setNick(nick);
-//        entity.setCupSize(cupSize);
-//        entity.setBustSize(bustSize);
-//        entity.setWaistSize(waistSize);
-//        entity.setHipSize(hipSize);
-//        entity.setWeight(weight);
-//
-//        try {
-//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//            entity.setBirthday(new BmobDate(sdf.parse(birthday)));
-//        } catch (ParseException e) {
-//            showMessage("生日格式不正确");
-//            e.printStackTrace();
-//            return;
-//        }
-//
-//        entity.setUsername(account);
-//        entity.setMobilePhoneNumber(account);
-//        password = EncryptUtils.encryptMD5ToString(password).toLowerCase();
-//        entity.setPassword(password);
-//        switch (mRgSex.getCheckedRadioButtonId()) {
-//            //性别 1男；2女；
-//            case R.id.rbtn_sex_man:
-//                entity.setSex(1);
-//                break;
-//            case R.id.rbtn_sex_woman:
-//                entity.setSex(2);
-//                break;
-//            default:
-//                entity.setSex(1);
-//                break;
-//        }
-//        entity.setShow(mCbIsShow.isChecked());
-//
-//        // 例如 LocalMedia 里面返回三种path
-//        // 1.media.getPath(); 为原图path
-//        // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true
-//        // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true
-//        // 如果裁剪并压缩了，以取压缩路径为准，因为是先裁剪后压缩的
-//        if (mImageSelectList != null && mImageSelectList.size() > 0) {
-//            LocalMedia media = mImageSelectList.get(0);
-//            if (media != null && media.isCompressed()) {
-//                KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
-//                BmobFile bmobFile = new BmobFile(new File(media.getCompressPath()));
-//                entity.setAvatar(bmobFile);
-//                showDialog("正在上传头像...");
-//                uploadPic(bmobFile, new UploadFileListener() {
-//
-//                    @Override
-//                    public void done(BmobException e) {
-//                        if (e == null) {
-//                            closeDialog();
-//                            //bmobFile.getFileUrl()--返回的上传文件的完整地址
-//                            KLog.i(Constants.TAG, "上传文件成功:" + bmobFile.getFileUrl());
-//                            saveModelEntity(entity);
-//                        } else {
-//                            closeDialog();
-//                            BmobExceptionUtil.handler(e);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onProgress(Integer value) {
-//                        // 返回的上传进度（百分比）
-//                    }
-//                });
-//                return;
-//            } else {
-//                showMessage("图片选取失败，请重新选择图片");
-//                mImageSelectList = new ArrayList<>();
-//                return;
-//            }
-//        }
-//        saveModelEntity(entity);
+        String title = mEdtTitle.getText().toString();
+        String desc = mEdtDesc.getText().toString();
+        String label = mEdtLabel.getText().toString();
+        String seeBaseNum = mEdtSeeBaseNum.getText().toString();
+        String collectBaseNum = mEdtCollectBaseNum.getText().toString();
+        if (TextUtils.isEmpty(title)) {
+            showMessage("请输入标题");
+            return;
+        }
+        if (TextUtils.isEmpty(desc)) {
+            showMessage("请输入描述");
+            return;
+        }
+        if (TextUtils.isEmpty(label)) {
+            showMessage("请输入标签");
+            return;
+        }
+        if (TextUtils.isEmpty(seeBaseNum)) {
+            showMessage("请输入浏览基数");
+            return;
+        }
+        if (TextUtils.isEmpty(collectBaseNum)) {
+            showMessage("请输入收藏基数");
+            return;
+        }
+
+        PhotoBagEntity entity = new PhotoBagEntity();
+        entity.setModel(mModelEntity);
+        entity.setTitle(title);
+        entity.setDesc(desc);
+        entity.setLabel(label);
+        entity.setSeeBaseNum(Integer.valueOf(seeBaseNum));
+        entity.setCollectedBaseNum(Integer.valueOf(collectBaseNum));
+        entity.setVip(mCbIsVip.isChecked());
+        entity.setBlur(mCbIsBlur.isChecked());
+        entity.setShow(mCbIsShow.isChecked());
+
+        // 例如 LocalMedia 里面返回三种path
+        // 1.media.getPath(); 为原图path
+        // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true
+        // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true
+        // 如果裁剪并压缩了，以取压缩路径为准，因为是先裁剪后压缩的
+        if (mImageSelectList != null && mImageSelectList.size() > 0) {
+            LocalMedia media = mImageSelectList.get(0);
+            if (media != null && media.isCompressed()) {
+                KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
+                BmobFile bmobFile = new BmobFile(new File(media.getCompressPath()));
+                entity.setCoverPic(bmobFile);
+                showDialog("正在上传封面...");
+                uploadPic(bmobFile, new UploadFileListener() {
+
+                    @Override
+                    public void done(BmobException e) {
+                        if (e == null) {
+                            closeDialog();
+                            //bmobFile.getFileUrl()--返回的上传文件的完整地址
+                            KLog.i(Constants.TAG, "上传文件成功:" + bmobFile.getFileUrl());
+                            saveModelEntity(entity);
+                        } else {
+                            closeDialog();
+                            BmobExceptionUtil.handler(e);
+                        }
+                    }
+
+                    @Override
+                    public void onProgress(Integer value) {
+                        // 返回的上传进度（百分比）
+                    }
+                });
+                return;
+            } else {
+                showMessage("图片选取失败，请重新选择图片");
+                mImageSelectList = new ArrayList<>();
+                return;
+            }
+        }
+        saveModelEntity(entity);
     }
 
-    private void saveModelEntity(ModelEntity entity) {
+    private void saveModelEntity(PhotoBagEntity entity) {
         KLog.i(Constants.TAG
-                , "昵称:" + entity.getNick()
-                , "罩杯:" + entity.getCupSize()
-                , "胸围:" + entity.getBustSize()
-                , "腰围:" + entity.getWaistSize()
-                , "臀围:" + entity.getHipSize()
-                , "生日:" + entity.getBirthday().getDate()
-                , "账号:" + entity.getUsername()
-                , "性别:" + entity.getSex()
-                , "显示:" + entity.getShow()
+                , "模特id:" + entity.getModel().getObjectId()
+                , "标题:" + entity.getTitle()
+                , "描述:" + entity.getDesc()
+                , "标签:" + entity.getLabel()
+                , "浏览基数:" + entity.getSeeBaseNum()
+                , "收藏基数:" + entity.getCollectedBaseNum()
+                , "浏览数:" + entity.getSeeNum()
+                , "收藏数:" + entity.getCollectedNum()
+                , "是否VIP:" + entity.getVip()
+                , "是否模糊:" + entity.getBlur()
+                , "是否展示:" + entity.getShow()
         );
         showDialog("正在添加模特...");
-        entity.signUp(new SaveListener<ModelEntity>() {
+        entity.save(new SaveListener<String>() {
             @Override
-            public void done(ModelEntity s, BmobException e) {
+            public void done(String s, BmobException e) {
                 closeDialog();
                 if (e == null) {
                     showMessage("模特添加成功");
@@ -695,19 +668,12 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
     }
 
     @Override
-    @OnClick({/*R.id.iv_avatar, R.id.btn_select_avatar, R.id.btn_all_photos*/})
+    @OnClick({R.id.iv_image, R.id.btn_select_image})
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.iv_avatar:
-            case R.id.btn_select_avatar:
+            case R.id.iv_image:
+            case R.id.btn_select_image:
                 selectPhoto();
-                break;
-            case R.id.btn_all_photos:
-                if (mModelEntity != null) {
-                    Intent intent = new Intent(mActivity, BagListActivity.class);
-                    intent.putExtra(BagListActivity.ENTITY_DATA, mModelEntity);
-                    startActivityForResult(intent, TO_PHOTO_LIST);
-                }
                 break;
             default:
                 break;
@@ -739,16 +705,16 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
                 .hideBottomControls(true)// 是否显示uCrop工具栏，默认不显示 true or false
                 .isGif(false)// 是否显示gif图片 true or false
                 .freeStyleCropEnabled(false)// 裁剪框是否可拖拽 true or false
-                .circleDimmedLayer(true)// 是否圆形裁剪 true or false
-                .showCropFrame(false)// 是否显示裁剪矩形边框 圆形裁剪时建议设为false   true or false
-                .showCropGrid(false)// 是否显示裁剪矩形网格 圆形裁剪时建议设为false    true or false
+                .circleDimmedLayer(false)// 是否圆形裁剪 true or false
+                .showCropFrame(true)// 是否显示裁剪矩形边框 圆形裁剪时建议设为false   true or false
+                .showCropGrid(true)// 是否显示裁剪矩形网格 圆形裁剪时建议设为false    true or false
                 .openClickSound(false)// 是否开启点击声音 true or false
                 .selectionMedia(mImageSelectList)// 是否传入已选图片 List<LocalMedia> list
                 .previewEggs(true)// 预览图片时 是否增强左右滑动图片体验(图片滑动一半即可看到上一张是否选中) true or false
 //                        .cropCompressQuality()// 裁剪压缩质量 默认90 int
                 .compressMaxKB(300)//压缩最大值kb compressGrade()为Luban.CUSTOM_GEAR有效 int
-                .compressWH(500, 500) // 压缩宽高比 compressGrade()为Luban.CUSTOM_GEAR有效  int
-                .cropWH(500, 500)// 裁剪宽高比，设置如果大于图片本身宽高则无效 int
+                .compressWH(1000, 1000) // 压缩宽高比 compressGrade()为Luban.CUSTOM_GEAR有效  int
+                .cropWH(1000, 1000)// 裁剪宽高比，设置如果大于图片本身宽高则无效 int
                 .rotateEnabled(true) // 裁剪是否可旋转图片 true or false
                 .scaleEnabled(true)// 裁剪是否可放大缩小图片 true or false
 //                        .videoQuality()// 视频录制质量 0 or 1 int
@@ -777,10 +743,10 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
                                 mIsNeedDeleteBmobImage = true;
                             }
                             KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
-//                            GlideApp.with(mActivity)
-//                                    .load(media.getCompressPath())
-//                                    .transform(new MultiTransformation<>(new CenterCrop(), new GlideCircleTransform(mActivity)))
-//                                    .into(mIvAvatar);
+                            GlideApp.with(mActivity)
+                                    .load(media.getCompressPath())
+                                    .centerCrop()
+                                    .into(mIvImage);
                         } else {
                             showMessage("图片选取失败");
                             mImageSelectList = new ArrayList<>();
