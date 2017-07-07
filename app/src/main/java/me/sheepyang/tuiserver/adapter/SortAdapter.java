@@ -6,8 +6,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.blankj.utilcode.util.ScreenUtils;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
@@ -15,22 +13,18 @@ import java.util.List;
 
 import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.model.bmobentity.ImageTypeEntity;
+import me.sheepyang.tuiserver.utils.GlideApp;
 
 /**
  * Created by Administrator on 2017/7/1.
  */
 
 public class SortAdapter extends BaseQuickAdapter<ImageTypeEntity, BaseViewHolder> {
-    private RequestOptions mOptions;
     private int mScreenWidth;
 
     public SortAdapter(@Nullable List<ImageTypeEntity> data) {
         super(R.layout.adapter_item_sort, data);
         mScreenWidth = ScreenUtils.getScreenWidth();
-        mOptions = new RequestOptions()
-                .placeholder(R.drawable.ico_loading2)
-                .error(R.drawable.ico_error_avatar_white)
-                .centerCrop();
     }
 
     @Override
@@ -54,14 +48,18 @@ public class SortAdapter extends BaseQuickAdapter<ImageTypeEntity, BaseViewHolde
         helper.setVisible(R.id.tv_is_blur, item.getBlur());
 
         if (item.getPic() != null && !TextUtils.isEmpty(item.getPic().getFileUrl())) {
-            Glide.with(mContext)
+            GlideApp.with(mContext)
                     .load(item.getPic().getFileUrl())
-                    .apply(mOptions)
+                    .placeholder(R.drawable.ico_loading2)
+                    .error(R.drawable.ico_error_avatar_white)
+                    .centerCrop()
                     .into((ImageView) helper.getView(R.id.iv_photo));
         } else {
-            Glide.with(mContext)
+            GlideApp.with(mContext)
                     .load("")
-                    .apply(mOptions)
+                    .placeholder(R.drawable.ico_loading2)
+                    .error(R.drawable.ico_error_avatar_white)
+                    .centerCrop()
                     .into((ImageView) helper.getView(R.id.iv_photo));
         }
     }

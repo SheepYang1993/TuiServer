@@ -14,6 +14,7 @@ public class BmobExceptionUtil {
         switch (e.getErrorCode()) {
             case 100://something wrong with your code
             case 502://查询失败
+            case 9015://其他错误均返回此code
                 KLog.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
                 ToastUtils.showShortToast("服务器又炸啦~再刷新下试试~");
                 break;

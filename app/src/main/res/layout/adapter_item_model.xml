@@ -110,6 +110,7 @@
                 android:layout_marginTop="5dp"
                 android:textColor="@color/white"
                 android:textSize="12sp"
+                android:visibility="invisible"
                 tool:text="套图:0套"/>
         </LinearLayout>
     </LinearLayout>

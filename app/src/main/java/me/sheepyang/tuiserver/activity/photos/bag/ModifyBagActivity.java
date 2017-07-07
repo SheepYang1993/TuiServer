@@ -3,18 +3,21 @@ package me.sheepyang.tuiserver.activity.photos.bag;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.EncryptUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.ScreenUtils;
 import com.bumptech.glide.load.MultiTransformation;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.compress.Luban;
 import com.luck.picture.lib.config.PictureConfig;
@@ -35,6 +38,7 @@ import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseActivity;
+import me.sheepyang.tuiserver.activity.photos.detail.PhotoDetailListActivity;
 import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.model.bmobentity.ModelEntity;
 import me.sheepyang.tuiserver.model.bmobentity.PhotoBagEntity;
@@ -42,7 +46,6 @@ import me.sheepyang.tuiserver.utils.AppUtil;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 import me.sheepyang.tuiserver.utils.DateUtil;
 import me.sheepyang.tuiserver.utils.GlideApp;
-import me.sheepyang.tuiserver.utils.transformation.GlideCircleTransform;
 import me.sheepyang.tuiserver.widget.QBar;
 
 import static com.luck.picture.lib.config.PictureConfig.LUBAN_COMPRESS_MODE;
@@ -51,8 +54,10 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
     public static final String TYPE_MODIFY = "type_modify";
     public static final String TYPE_ADD = "type_add";
     public static final String TYPE = "type";
+    public static final String MODEL_ENTITY_DATA = "model_entity_data";
     public static final String ENTITY_DATA = "entity_data";
     private static final int TO_PHOTO_LIST = 0x001;
+    private static final int TO_PHOTO_DETAIL = 0x002;
     @BindView(R.id.QBar)
     QBar mQBar;
     @BindView(R.id.tv_name)
@@ -81,6 +86,10 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
     EditText mEdtDesc;
     @BindView(R.id.edt_label)
     EditText mEdtLabel;
+    @BindView(R.id.edt_see_num)
+    EditText mEdtSeeNum;
+    @BindView(R.id.edt_collect_num)
+    EditText mEdtCollectNum;
     @BindView(R.id.edt_see_base_num)
     EditText mEdtSeeBaseNum;
     @BindView(R.id.edt_collect_base_num)
@@ -91,11 +100,13 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
     CheckBox mCbIsBlur;
     @BindView(R.id.cb_is_show)
     CheckBox mCbIsShow;
+    @BindView(R.id.btn_all_photos)
+    Button mBtnAllPhotos;
     private List<LocalMedia> mImageSelectList = new ArrayList<>();
     private boolean mIsNeedDeleteBmobImage;
     private String mType;
     private ModelEntity mModelEntity;
-    private EditText mEdtConfirmPassword;
+    private PhotoBagEntity mPhotoBagEntity;
 
     @Override
     public int setLayoutId() {
@@ -112,18 +123,13 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void initView() {
-        mEdtConfirmPassword = new EditText(mActivity);
-        mEdtConfirmPassword.setHint("请输入密码");
-    }
-
-    private void initData() {
-        if (mModelEntity != null) {
-
-        }
+        ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) mIvImage.getLayoutParams();
+        lp.height = ScreenUtils.getScreenWidth();
+        mIvImage.setLayoutParams(lp);
     }
 
     private void initIntent(Intent intent) {
-        mModelEntity = (ModelEntity) intent.getSerializableExtra(ENTITY_DATA);
+        mModelEntity = (ModelEntity) intent.getSerializableExtra(MODEL_ENTITY_DATA);
         if (mModelEntity == null) {
             showMessage("找不到模特信息");
             onBackPressed();
@@ -196,29 +202,61 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         GlideApp.with(mActivity)
                 .load(avatar)
                 .placeholder(R.drawable.ico_user_avatar)
-                .transform(new MultiTransformation<>(new CenterCrop(), new GlideCircleTransform(mActivity)))
+                .error(R.drawable.ico_user_avatar)
+                .transform(new MultiTransformation<>(new CenterCrop(), new CircleCrop()))
                 .into(mIvAvatar);
 
 
         if (TYPE_MODIFY.equals(mType)) {
+            mPhotoBagEntity = (PhotoBagEntity) intent.getSerializableExtra(ENTITY_DATA);
+            if (mPhotoBagEntity == null) {
+                showMessage("找不到套图信息");
+                onBackPressed();
+                return;
+            }
             mQBar.setTitle("套图详情");
             mQBar.setRightText("修改");
+            mBtnAllPhotos.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void initData() {
+        if (mPhotoBagEntity != null) {
+            mEdtTitle.setText(mPhotoBagEntity.getTitle());
+            mEdtLabel.setText(mPhotoBagEntity.getLabel());
+            mEdtDesc.setText(mPhotoBagEntity.getDesc());
+            mEdtSeeNum.setText(mPhotoBagEntity.getSeeNum() + "");
+            mEdtCollectNum.setText(mPhotoBagEntity.getCollectedNum() + "");
+            mEdtSeeBaseNum.setText(mPhotoBagEntity.getSeeBaseNum() + "");
+            mEdtCollectBaseNum.setText(mPhotoBagEntity.getCollectedBaseNum() + "");
+            mCbIsVip.setChecked(mPhotoBagEntity.getVip());
+            mCbIsBlur.setChecked(mPhotoBagEntity.getBlur());
+            mCbIsShow.setChecked(mPhotoBagEntity.getShow());
+
+            if (mPhotoBagEntity.getCoverPic() != null && !TextUtils.isEmpty(mPhotoBagEntity.getCoverPic().getFileUrl())) {
+                GlideApp.with(mActivity)
+                        .load(mPhotoBagEntity.getCoverPic().getFileUrl())
+                        .placeholder(R.drawable.ico_user_avatar)
+                        .error(R.drawable.ico_user_avatar)
+                        .centerCrop()
+                        .into(mIvImage);
+            }
         }
     }
 
     private void initListener() {
-//        mIvAvatar.setOnLongClickListener((View v) -> {
+//        mIvImage.setOnLongClickListener((View v) -> {
 //            if (mImageSelectList != null && mImageSelectList.size() > 0) {
 //                String msg = "";
-//                if (!TextUtils.isEmpty(mEdtNick.getText().toString())) {
-//                    msg = mEdtNick.getText().toString();
-//                } else if (mModelEntity != null) {
-//                    msg = mModelEntity.getNick();
+//                if (!TextUtils.isEmpty(mEdtTitle.getText().toString())) {
+//                    msg = mEdtTitle.getText().toString();
+//                } else if (mPhotoBagEntity != null) {
+//                    msg = mPhotoBagEntity.getTitle();
 //                }
 //                new AlertDialog.Builder(mActivity)
-//                        .setMessage("确定要删除 " + msg + " 的头像吗？")
+//                        .setMessage("确定要删除 " + msg + " 这套图吗？")
 //                        .setPositiveButton("删除", (DialogInterface dialog, int which) -> {
-//                            showDialog("正在删除头像");
+//                            showDialog("正在删除封面");
 //                            mImageSelectList = new ArrayList<LocalMedia>();
 //                            GlideApp.with(mActivity)
 //                                    .load("")
@@ -251,15 +289,12 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
 //        });
         if (TYPE_MODIFY.equals(mType)) {
             mQBar.setOnRightClickListener((View v) -> {
-                mEdtConfirmPassword.setText("");
                 new AlertDialog.Builder(mActivity)
-                        .setMessage("确定要修改模特信息吗？")
-                        .setView(mEdtConfirmPassword)
+                        .setMessage("确定要修改套图信息吗？")
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                KLog.e();
-                                modifyModel(mModelEntity, EncryptUtils.encryptMD5ToString(mEdtConfirmPassword.getText().toString()).toLowerCase());
+                                modifyPhotoBag(mPhotoBagEntity);
                             }
                         })
                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -277,145 +312,91 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         }
     }
 
-    private void modifyModel(ModelEntity entity, String password) {
-//        KeyboardUtils.hideSoftInput(mActivity);
-//        if (TextUtils.isEmpty(password)) {
-//            showMessage("请输入密码");
-//            return;
-//        }
-//        ModelEntity bu2 = new ModelEntity();
-//        bu2.setUsername(entity.getUsername());
-//        bu2.setPassword(password);
-//        showDialog("正在登录模特账号");
-//        toLogin(bu2, new SaveListener<BmobUser>() {
-//
-//            @Override
-//            public void done(BmobUser bmobUser, BmobException e) {
-//                closeDialog();
-//                if (e == null) {
-//                    //通过BmobUser user = BmobUser.getCurrentUser()获取登录成功后的本地用户信息
-//                    //如果是自定义用户对象MyUser，可通过MyUser user = BmobUser.getCurrentUser(MyUser.class)获取自定义用户信息
-//
-//                    String nick = mEdtNick.getText().toString();
-//                    String cupSize = mEdtCup.getText().toString();
-//                    String bustSize = mEdtBustSize.getText().toString();
-//                    String waistSize = mEdtWaistSize.getText().toString();
-//                    String hipSize = mEdtHipSize.getText().toString();
-//                    String weight = mEdtWeight.getText().toString();
-//                    String birthday = mEdtBirthday.getText().toString();
-//                    if (TextUtils.isEmpty(nick)) {
-//                        showMessage("请输入昵称");
-//                        return;
-//                    }
-//                    if (TextUtils.isEmpty(cupSize)) {
-//                        showMessage("请输入罩杯");
-//                        return;
-//                    }
-//                    if (TextUtils.isEmpty(bustSize)) {
-//                        showMessage("请输入胸围");
-//                        return;
-//                    }
-//                    if (TextUtils.isEmpty(waistSize)) {
-//                        showMessage("请输入腰围");
-//                        return;
-//                    }
-//                    if (TextUtils.isEmpty(hipSize)) {
-//                        showMessage("请输入臀围");
-//                        return;
-//                    }
-//                    if (TextUtils.isEmpty(weight)) {
-//                        showMessage("请输入体重");
-//                        return;
-//                    }
-//                    if (TextUtils.isEmpty(birthday)) {
-//                        showMessage("请输入生日");
-//                        return;
-//                    }
-//
-//                    entity.setNick(nick);
-//                    entity.setCupSize(cupSize);
-//                    entity.setBustSize(bustSize);
-//                    entity.setWaistSize(waistSize);
-//                    entity.setHipSize(hipSize);
-//                    entity.setWeight(weight);
-//
-//                    try {
-//                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//                        entity.setBirthday(new BmobDate(sdf.parse(birthday)));
-//                    } catch (ParseException e1) {
-//                        showMessage("生日格式不正确");
-//                        e1.printStackTrace();
-//                        return;
-//                    }
-//
-//                    switch (mRgSex.getCheckedRadioButtonId()) {
-//                        //性别 1男；2女；
-//                        case R.id.rbtn_sex_man:
-//                            entity.setSex(1);
-//                            break;
-//                        case R.id.rbtn_sex_woman:
-//                            entity.setSex(2);
-//                            break;
-//                        default:
-//                            entity.setSex(1);
-//                            break;
-//                    }
-//                    entity.setShow(mCbIsShow.isChecked());
-//                    KLog.e();
-//                    modifyModelImage(entity, new OnModifyModelImageListener() {
-//                        @Override
-//                        public void onSuccess(ModelEntity entity) {
-//                            KLog.e();
-//                            updateModelEntity(entity);
-//                        }
-//
-//                        @Override
-//                        public void onError(BmobException e) {
-//                            KLog.e();
-//                            closeDialog();
-//                            AppUtil.logout();
-//                            BmobExceptionUtil.handler(e);
-//                        }
-//                    });
-//                } else {
-//                    AppUtil.logout();
-//                    BmobExceptionUtil.handler(e);
-//                }
-//            }
-//        });
+    private void modifyPhotoBag(PhotoBagEntity entity) {
+        KeyboardUtils.hideSoftInput(mActivity);
+        String title = mEdtTitle.getText().toString();
+        String desc = mEdtDesc.getText().toString();
+        String label = mEdtLabel.getText().toString();
+        String seeNum = mEdtSeeNum.getText().toString();
+        String collectNum = mEdtCollectNum.getText().toString();
+        String seeBaseNum = mEdtSeeBaseNum.getText().toString();
+        String collectBaseNum = mEdtCollectBaseNum.getText().toString();
+        if (TextUtils.isEmpty(title)) {
+            showMessage("请输入标题");
+            return;
+        }
+        if (TextUtils.isEmpty(desc)) {
+            showMessage("请输入描述");
+            return;
+        }
+        if (TextUtils.isEmpty(label)) {
+            showMessage("请输入标签");
+            return;
+        }
+        if (TextUtils.isEmpty(seeNum)) {
+            showMessage("请输入浏览数");
+            return;
+        }
+        if (TextUtils.isEmpty(seeBaseNum)) {
+            showMessage("请输入浏览基数");
+            return;
+        }
+        if (TextUtils.isEmpty(collectNum)) {
+            showMessage("请输入收藏数");
+            return;
+        }
+        if (TextUtils.isEmpty(collectBaseNum)) {
+            showMessage("请输入收藏基数");
+            return;
+        }
+
+        entity.setModel(mModelEntity);
+        entity.setTitle(title);
+        entity.setDesc(desc);
+        entity.setLabel(label);
+        entity.setSeeNum(Integer.valueOf(seeNum));
+        entity.setSeeBaseNum(Integer.valueOf(seeBaseNum));
+        entity.setCollectedNum(Integer.valueOf(collectNum));
+        entity.setCollectedBaseNum(Integer.valueOf(collectBaseNum));
+        entity.setVip(mCbIsVip.isChecked());
+        entity.setBlur(mCbIsBlur.isChecked());
+        entity.setShow(mCbIsShow.isChecked());
+
+        KLog.e();
+        modifyPhotoBagImage(entity, new OnModifyPhotoBagImageListener() {
+            @Override
+            public void onSuccess(PhotoBagEntity entity) {
+                KLog.e();
+                updateModelEntity(entity);
+            }
+
+            @Override
+            public void onError(BmobException e) {
+                KLog.e();
+                closeDialog();
+                AppUtil.logout();
+                BmobExceptionUtil.handler(e);
+            }
+        });
+
     }
 
-    private void toLogin(ModelEntity entity, SaveListener listener) {
-        entity.login(listener);
-    }
-
-    private void updateModelEntity(ModelEntity entity) {
-        KLog.i(Constants.TAG
-                , "昵称:" + entity.getNick()
-                , "罩杯:" + entity.getCupSize()
-                , "胸围:" + entity.getBustSize()
-                , "腰围:" + entity.getWaistSize()
-                , "臀围:" + entity.getHipSize()
-                , "生日:" + entity.getBirthday().getDate()
-                , "账号:" + entity.getUsername()
-                , "性别:" + entity.getSex()
-                , "显示:" + entity.getShow()
-        );
-        showDialog("正在修改模特...");
-        if (entity.getAvatar() == null || TextUtils.isEmpty(entity.getAvatar().getFileUrl())) {
-            entity.remove("avatar");
+    private void updateModelEntity(PhotoBagEntity entity) {
+        showDialog("正在修改套图...");
+        if (entity.getCoverPic() == null || TextUtils.isEmpty(entity.getCoverPic().getFileUrl())) {
+            entity.remove("coverPic");
         }
         entity.update(new UpdateListener() {
             @Override
             public void done(BmobException e) {
                 closeDialog();
                 if (e == null) {
-                    showMessage("模特修改成功");
+                    showMessage("套图修改成功");
                     AppUtil.logout();
                     setResult(RESULT_OK);
-//                    mIvAvatar.postDelayed(() -> {
-//                        onBackPressed();
-//                    }, 500);
+                    mIvAvatar.postDelayed(() -> {
+                        onBackPressed();
+                    }, 500);
                 } else {
                     AppUtil.logout();
                     BmobExceptionUtil.handler(e);
@@ -424,18 +405,18 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         });
     }
 
-    private void deleteModelPic(ModelEntity entity, UpdateListener listener) {
+    private void deletePhotoBagPic(PhotoBagEntity entity, UpdateListener listener) {
         BmobFile file = new BmobFile();
-        file.setUrl(entity.getAvatar().getUrl());//此url是上传文件成功之后通过bmobFile.getUrl()方法获取的。
-        KLog.i(entity.getAvatar().getUrl());
-        if (entity.getAvatar() != null && !TextUtils.isEmpty(entity.getAvatar().getUrl())) {
+        file.setUrl(entity.getCoverPic().getUrl());//此url是上传文件成功之后通过bmobFile.getUrl()方法获取的。
+        KLog.i(entity.getCoverPic().getUrl());
+        if (entity.getCoverPic() != null && !TextUtils.isEmpty(entity.getCoverPic().getUrl())) {
             file.delete(listener);
         }
     }
 
-    private void modifyModelImage(ModelEntity entity, OnModifyModelImageListener listener) {
+    private void modifyPhotoBagImage(PhotoBagEntity entity, OnModifyPhotoBagImageListener listener) {
         KLog.e();
-        if (entity.getAvatar() == null || TextUtils.isEmpty(entity.getAvatar().getFileUrl())) {//服务器无图
+        if (entity.getCoverPic() == null || TextUtils.isEmpty(entity.getCoverPic().getFileUrl())) {//服务器无图
             KLog.e();
             // 例如 LocalMedia 里面返回三种path
             // 1.media.getPath(); 为原图path
@@ -455,7 +436,7 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
                             if (e == null) {
                                 closeDialog();
                                 KLog.e();
-                                entity.setAvatar(bmobFile);
+                                entity.setCoverPic(bmobFile);
                                 //bmobFile.getFileUrl()--返回的上传文件的完整地址
                                 KLog.i(Constants.TAG, "上传文件成功:" + bmobFile.getFileUrl());
                                 listener.onSuccess(entity);
@@ -478,14 +459,14 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
                 }
             }
             KLog.e();
-            entity.setAvatar(null);
+            entity.setCoverPic(null);
             listener.onSuccess(entity);
         } else {//服务器已经有图
             KLog.e();
             if (mIsNeedDeleteBmobImage) {
                 mIsNeedDeleteBmobImage = false;
                 showDialog("正在修改封面...");
-                deleteModelPic(entity, new UpdateListener() {
+                deletePhotoBagPic(entity, new UpdateListener() {
                     @Override
                     public void done(BmobException e) {
                         if (e == null) {
@@ -506,7 +487,7 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
                                             if (e == null) {
                                                 closeDialog();
                                                 KLog.e();
-                                                entity.setAvatar(bmobFile);
+                                                entity.setCoverPic(bmobFile);
                                                 //bmobFile.getFileUrl()--返回的上传文件的完整地址
                                                 KLog.i(Constants.TAG, "上传文件成功:" + bmobFile.getFileUrl());
                                                 listener.onSuccess(entity);
@@ -529,7 +510,7 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
                                 }
                             }
                             KLog.e();
-                            entity.setAvatar(null);
+                            entity.setCoverPic(null);
                             listener.onSuccess(entity);
                         } else {
                             listener.onError(e);
@@ -543,8 +524,8 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         }
     }
 
-    private interface OnModifyModelImageListener {
-        void onSuccess(ModelEntity entity);
+    private interface OnModifyPhotoBagImageListener {
+        void onSuccess(PhotoBagEntity entity);
 
         void onError(BmobException e);
     }
@@ -554,6 +535,8 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         String title = mEdtTitle.getText().toString();
         String desc = mEdtDesc.getText().toString();
         String label = mEdtLabel.getText().toString();
+        String seeNum = mEdtSeeNum.getText().toString();
+        String collectNum = mEdtCollectNum.getText().toString();
         String seeBaseNum = mEdtSeeBaseNum.getText().toString();
         String collectBaseNum = mEdtCollectBaseNum.getText().toString();
         if (TextUtils.isEmpty(title)) {
@@ -568,8 +551,16 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
             showMessage("请输入标签");
             return;
         }
+        if (TextUtils.isEmpty(seeNum)) {
+            showMessage("请输入浏览数");
+            return;
+        }
         if (TextUtils.isEmpty(seeBaseNum)) {
             showMessage("请输入浏览基数");
+            return;
+        }
+        if (TextUtils.isEmpty(collectNum)) {
+            showMessage("请输入收藏数");
             return;
         }
         if (TextUtils.isEmpty(collectBaseNum)) {
@@ -582,8 +573,11 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         entity.setTitle(title);
         entity.setDesc(desc);
         entity.setLabel(label);
+        entity.setSeeNum(Integer.valueOf(seeNum));
         entity.setSeeBaseNum(Integer.valueOf(seeBaseNum));
+        entity.setCollectedNum(Integer.valueOf(collectNum));
         entity.setCollectedBaseNum(Integer.valueOf(collectBaseNum));
+        entity.setPhotoNum(0);
         entity.setVip(mCbIsVip.isChecked());
         entity.setBlur(mCbIsBlur.isChecked());
         entity.setShow(mCbIsShow.isChecked());
@@ -608,7 +602,7 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
                             closeDialog();
                             //bmobFile.getFileUrl()--返回的上传文件的完整地址
                             KLog.i(Constants.TAG, "上传文件成功:" + bmobFile.getFileUrl());
-                            saveModelEntity(entity);
+                            savePhotoBagEntity(entity);
                         } else {
                             closeDialog();
                             BmobExceptionUtil.handler(e);
@@ -627,10 +621,10 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
                 return;
             }
         }
-        saveModelEntity(entity);
+        savePhotoBagEntity(entity);
     }
 
-    private void saveModelEntity(PhotoBagEntity entity) {
+    private void savePhotoBagEntity(PhotoBagEntity entity) {
         KLog.i(Constants.TAG
                 , "模特id:" + entity.getModel().getObjectId()
                 , "标题:" + entity.getTitle()
@@ -644,17 +638,17 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
                 , "是否模糊:" + entity.getBlur()
                 , "是否展示:" + entity.getShow()
         );
-        showDialog("正在添加模特...");
+        showDialog("正在添加套图...");
         entity.save(new SaveListener<String>() {
             @Override
             public void done(String s, BmobException e) {
                 closeDialog();
                 if (e == null) {
-                    showMessage("模特添加成功");
+                    showMessage("套图添加成功");
                     setResult(RESULT_OK);
-//                    mIvAvatar.postDelayed(() -> {
-//                        onBackPressed();
-//                    }, 500);
+                    mIvAvatar.postDelayed(() -> {
+                        onBackPressed();
+                    }, 500);
                 } else {
                     closeDialog();
                     BmobExceptionUtil.handler(e);
@@ -668,12 +662,16 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
     }
 
     @Override
-    @OnClick({R.id.iv_image, R.id.btn_select_image})
+    @OnClick({R.id.iv_image, R.id.btn_select_image, R.id.btn_all_photos})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_image:
             case R.id.btn_select_image:
                 selectPhoto();
+                break;
+            case R.id.btn_all_photos:
+                Intent intent = new Intent(mActivity, PhotoDetailListActivity.class);
+                startActivityForResult(intent, TO_PHOTO_DETAIL);
                 break;
             default:
                 break;
@@ -739,7 +737,7 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
                     if (mImageSelectList != null && mImageSelectList.size() > 0) {
                         LocalMedia media = mImageSelectList.get(0);
                         if (media != null && media.isCompressed()) {
-                            if (mModelEntity != null && mModelEntity.getAvatar() != null && !TextUtils.isEmpty(mModelEntity.getAvatar().getFileUrl())) {
+                            if (mPhotoBagEntity != null && mPhotoBagEntity.getCoverPic() != null && !TextUtils.isEmpty(mPhotoBagEntity.getCoverPic().getFileUrl())) {
                                 mIsNeedDeleteBmobImage = true;
                             }
                             KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());

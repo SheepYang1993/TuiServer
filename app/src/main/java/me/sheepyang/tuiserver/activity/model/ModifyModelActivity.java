@@ -20,6 +20,7 @@ import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.RegexUtils;
 import com.bumptech.glide.load.MultiTransformation;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.compress.Luban;
 import com.luck.picture.lib.config.PictureConfig;
@@ -51,7 +52,6 @@ import me.sheepyang.tuiserver.utils.AppUtil;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 import me.sheepyang.tuiserver.utils.DateUtil;
 import me.sheepyang.tuiserver.utils.GlideApp;
-import me.sheepyang.tuiserver.utils.transformation.GlideCircleTransform;
 import me.sheepyang.tuiserver.widget.QBar;
 
 import static com.luck.picture.lib.config.PictureConfig.LUBAN_COMPRESS_MODE;
@@ -105,6 +105,7 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
     private String mType;
     private ModelEntity mModelEntity;
     private EditText mEdtConfirmPassword;
+    private AlertDialog mModifyDialog;
 
     @Override
     public int setLayoutId() {
@@ -123,6 +124,24 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
     private void initView() {
         mEdtConfirmPassword = new EditText(mActivity);
         mEdtConfirmPassword.setHint("请输入密码");
+
+        mModifyDialog = new AlertDialog.Builder(mActivity)
+                .setMessage("确定要修改模特信息吗？")
+                .setView(mEdtConfirmPassword)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        KLog.e();
+                        modifyModel(mModelEntity, EncryptUtils.encryptMD5ToString(mEdtConfirmPassword.getText().toString()).toLowerCase());
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
     }
 
     private void initData() {
@@ -146,7 +165,9 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
             if (mModelEntity.getAvatar() != null && !TextUtils.isEmpty(mModelEntity.getAvatar().getFileUrl())) {
                 GlideApp.with(mActivity)
                         .load(mModelEntity.getAvatar().getFileUrl())
-                        .transform(new MultiTransformation<>(new CenterCrop(), new GlideCircleTransform(mActivity)))
+                        .placeholder(R.drawable.ico_user_avatar)
+                        .error(R.drawable.ico_user_avatar)
+                        .transform(new MultiTransformation<>(new CenterCrop(), new CircleCrop()))
                         .into(mIvAvatar);
             }
         }
@@ -240,23 +261,7 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
         if (TYPE_MODIFY.equals(mType)) {
             mQBar.setOnRightClickListener((View v) -> {
                 mEdtConfirmPassword.setText("");
-                new AlertDialog.Builder(mActivity)
-                        .setMessage("确定要修改模特信息吗？")
-                        .setView(mEdtConfirmPassword)
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                KLog.e();
-                                modifyModel(mModelEntity, EncryptUtils.encryptMD5ToString(mEdtConfirmPassword.getText().toString()).toLowerCase());
-                            }
-                        })
-                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .show();
+                mModifyDialog.show();
             });
         } else {
             mQBar.setOnRightClickListener((View v) -> {
@@ -787,7 +792,9 @@ public class ModifyModelActivity extends BaseActivity implements View.OnClickLis
                             KLog.i(Constants.TAG, media.getPath(), media.getCutPath(), media.getCompressPath());
                             GlideApp.with(mActivity)
                                     .load(media.getCompressPath())
-                                    .transform(new MultiTransformation<>(new CenterCrop(), new GlideCircleTransform(mActivity)))
+                                    .placeholder(R.drawable.ico_user_avatar)
+                                    .error(R.drawable.ico_user_avatar)
+                                    .transform(new MultiTransformation<>(new CenterCrop(), new CircleCrop()))
                                     .into(mIvAvatar);
                         } else {
                             showMessage("图片选取失败");

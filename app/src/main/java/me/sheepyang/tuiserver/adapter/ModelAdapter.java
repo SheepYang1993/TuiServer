@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.load.MultiTransformation;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
@@ -15,7 +16,6 @@ import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.model.bmobentity.ModelEntity;
 import me.sheepyang.tuiserver.utils.DateUtil;
 import me.sheepyang.tuiserver.utils.GlideApp;
-import me.sheepyang.tuiserver.utils.transformation.GlideCircleTransform;
 
 /**
  * Created by SheepYang on 2017-06-21.
@@ -79,7 +79,8 @@ public class ModelAdapter extends BaseQuickAdapter<ModelEntity, BaseViewHolder> 
         GlideApp.with(mContext)
                 .load(avatar)
                 .placeholder(R.drawable.ico_user_avatar)
-                .transform(new MultiTransformation<>(new CenterCrop(), new GlideCircleTransform(mContext)))
+                .error(R.drawable.ico_user_avatar)
+                .transform(new MultiTransformation<>(new CenterCrop(), new CircleCrop()))
                 .into((ImageView) helper.getView(R.id.iv_avatar));
     }
 }
