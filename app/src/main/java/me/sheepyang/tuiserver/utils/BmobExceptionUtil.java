@@ -11,6 +11,9 @@ import cn.bmob.v3.exception.BmobException;
 
 public class BmobExceptionUtil {
     public static void handler(BmobException e) {
+        if (e == null) {
+            return;
+        }
         switch (e.getErrorCode()) {
             case 100://something wrong with your code
             case 502://查询失败

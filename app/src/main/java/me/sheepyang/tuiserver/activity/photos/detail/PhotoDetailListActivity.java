@@ -29,24 +29,49 @@ import me.sheepyang.tuiserver.activity.sort.ModifySortActivity;
 import me.sheepyang.tuiserver.adapter.PhotoDetailAdapter;
 import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.model.bmobentity.ImageTypeEntity;
+import me.sheepyang.tuiserver.model.bmobentity.ModelEntity;
+import me.sheepyang.tuiserver.model.bmobentity.PhotoBagEntity;
 import me.sheepyang.tuiserver.model.bmobentity.PhotoDetailEntity;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 
 public class PhotoDetailListActivity extends BaseRefreshActivity implements View.OnClickListener {
     private static final int TO_ADD_PHOTO = 0x001;
     private static final int TO_MODIFY_SORT = 0x002;
+    public static final String PHOTO_BAG_ENTITY_DATA = "photo_bag_entity_data";
+    public static final String MODEL_ENTITY_DATA = "model_entity_data";
     private List<PhotoDetailEntity> mDatas = new ArrayList<>();
     private int mPageSize = 10;
     private int mCurrentPage = 0;
+    private PhotoBagEntity mPhotoBagEntity;
+    private ModelEntity mModelEntity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setBarTitle("图片详情");
         setBarRight("添加", (View v) -> {
-            startActivityForResult(new Intent(mActivity, AddPhotoActivity.class), TO_ADD_PHOTO);
+            Intent intent = new Intent(mActivity, AddPhotoActivity.class);
+            intent.putExtra(AddPhotoActivity.MODEL_ENTITY_DATA, mModelEntity);
+            intent.putExtra(AddPhotoActivity.PHOTO_BAG_ENTITY_DATA, mPhotoBagEntity);
+            startActivityForResult(intent, TO_ADD_PHOTO);
         });
+        initIntent(getIntent());
         mRefreshLayout.startRefresh();
+    }
+
+    private void initIntent(Intent intent) {
+        mModelEntity = (ModelEntity) intent.getSerializableExtra(MODEL_ENTITY_DATA);
+        mPhotoBagEntity = (PhotoBagEntity) intent.getSerializableExtra(PHOTO_BAG_ENTITY_DATA);
+        if (mModelEntity == null) {
+            showMessage("找不到模特信息");
+            onBackPressed();
+            return;
+        }
+        if (mPhotoBagEntity == null) {
+            showMessage("找不到套图信息");
+            onBackPressed();
+            return;
+        }
     }
 
     @Override

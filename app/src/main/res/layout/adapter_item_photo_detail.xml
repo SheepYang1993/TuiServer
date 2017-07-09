@@ -2,51 +2,18 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
                                              android:layout_width="match_parent"
-                                             android:layout_height="wrap_content">
+                                             android:layout_height="wrap_content"
+                                             android:background="#c5ff9898">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/iv_photo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:background="#c36eebf4"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/iv_photo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="15dp">
-
-            <TextView
-                android:id="@+id/tv_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="类型"/>
-
-            <TextView
-                android:id="@+id/tv_photo_num"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@+id/tv_photo_unit"
-                android:text="0"
-                android:textColor="#909090"/>
-
-            <TextView
-                android:id="@+id/tv_photo_unit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text="张照片"
-                android:textColor="#909090"/>
-        </RelativeLayout>
-    </LinearLayout>
-
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/tv_is_vip"
@@ -58,10 +25,11 @@
         android:gravity="center"
         android:padding="5dp"
         android:singleLine="true"
-        android:text="未展示"
+        android:text="会员专属"
         android:textColor="@android:color/white"
         android:textColorHint="@android:color/white"
         android:textSize="12sp"
+        android:visibility="gone"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -75,10 +43,11 @@
         android:gravity="center"
         android:padding="5dp"
         android:singleLine="true"
-        android:text="未展示"
+        android:text="模糊"
         android:textColor="@android:color/white"
         android:textColorHint="@android:color/white"
         android:textSize="12sp"
+        android:visibility="gone"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_is_vip"/>
 

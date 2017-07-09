@@ -23,6 +23,7 @@ import com.luck.picture.lib.compress.Luban;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
+import com.luck.picture.lib.tools.PictureFileUtils;
 import com.socks.library.KLog;
 
 import java.io.File;
@@ -38,6 +39,7 @@ import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseActivity;
+import me.sheepyang.tuiserver.activity.photos.detail.AddPhotoActivity;
 import me.sheepyang.tuiserver.activity.photos.detail.PhotoDetailListActivity;
 import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.model.bmobentity.ModelEntity;
@@ -671,6 +673,8 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.btn_all_photos:
                 Intent intent = new Intent(mActivity, PhotoDetailListActivity.class);
+                intent.putExtra(PhotoDetailListActivity.MODEL_ENTITY_DATA, mModelEntity);
+                intent.putExtra(PhotoDetailListActivity.PHOTO_BAG_ENTITY_DATA, mPhotoBagEntity);
                 startActivityForResult(intent, TO_PHOTO_DETAIL);
                 break;
             default:
@@ -760,5 +764,12 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        //包括裁剪和压缩后的缓存，要在上传成功后调用，注意：需要系统sd卡权限
+        PictureFileUtils.deleteCacheDirFile(mActivity);
+        super.onDestroy();
     }
 }
