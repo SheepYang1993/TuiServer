@@ -39,11 +39,13 @@ public class PhotoDetailListActivity extends BaseRefreshActivity implements View
     private static final int TO_MODIFY_SORT = 0x002;
     public static final String PHOTO_BAG_ENTITY_DATA = "photo_bag_entity_data";
     public static final String MODEL_ENTITY_DATA = "model_entity_data";
+    public static final String SORT_ENTITY_DATA = "sort_entity_data";
     private List<PhotoDetailEntity> mDatas = new ArrayList<>();
     private int mPageSize = 10;
     private int mCurrentPage = 0;
     private PhotoBagEntity mPhotoBagEntity;
     private ModelEntity mModelEntity;
+    private SortEntity mSortEntity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,7 @@ public class PhotoDetailListActivity extends BaseRefreshActivity implements View
         setBarTitle("图片详情");
         setBarRight("添加", (View v) -> {
             Intent intent = new Intent(mActivity, AddPhotoActivity.class);
+            intent.putExtra(AddPhotoActivity.SORT_ENTITY_DATA, mSortEntity);
             intent.putExtra(AddPhotoActivity.MODEL_ENTITY_DATA, mModelEntity);
             intent.putExtra(AddPhotoActivity.PHOTO_BAG_ENTITY_DATA, mPhotoBagEntity);
             startActivityForResult(intent, TO_ADD_PHOTO);
@@ -61,6 +64,7 @@ public class PhotoDetailListActivity extends BaseRefreshActivity implements View
 
     private void initIntent(Intent intent) {
         mModelEntity = (ModelEntity) intent.getSerializableExtra(MODEL_ENTITY_DATA);
+        mSortEntity = (SortEntity) intent.getSerializableExtra(SORT_ENTITY_DATA);
         mPhotoBagEntity = (PhotoBagEntity) intent.getSerializableExtra(PHOTO_BAG_ENTITY_DATA);
         if (mModelEntity == null) {
             showMessage("找不到模特信息");
@@ -69,6 +73,11 @@ public class PhotoDetailListActivity extends BaseRefreshActivity implements View
         }
         if (mPhotoBagEntity == null) {
             showMessage("找不到套图信息");
+            onBackPressed();
+            return;
+        }
+        if (mSortEntity == null) {
+            showMessage("找不到分类信息");
             onBackPressed();
             return;
         }

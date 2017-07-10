@@ -285,7 +285,6 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                KLog.i();
                 getSort();
             }
         });
@@ -762,6 +761,7 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
             case R.id.btn_all_photos:
                 Intent intent = new Intent(mActivity, PhotoDetailListActivity.class);
                 intent.putExtra(PhotoDetailListActivity.MODEL_ENTITY_DATA, mModelEntity);
+                intent.putExtra(PhotoDetailListActivity.SORT_ENTITY_DATA, mSortEntity);
                 intent.putExtra(PhotoDetailListActivity.PHOTO_BAG_ENTITY_DATA, mPhotoBagEntity);
                 startActivityForResult(intent, TO_PHOTO_DETAIL);
                 break;

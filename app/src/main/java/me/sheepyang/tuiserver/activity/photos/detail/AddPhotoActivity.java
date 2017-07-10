@@ -29,7 +29,7 @@ import cn.bmob.v3.datatype.BatchResult;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListListener;
-import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadBatchListener;
 import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
@@ -38,6 +38,7 @@ import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.model.bmobentity.ModelEntity;
 import me.sheepyang.tuiserver.model.bmobentity.PhotoBagEntity;
 import me.sheepyang.tuiserver.model.bmobentity.PhotoDetailEntity;
+import me.sheepyang.tuiserver.model.bmobentity.SortEntity;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 
 import static com.luck.picture.lib.config.PictureConfig.LUBAN_COMPRESS_MODE;
@@ -48,6 +49,7 @@ public class AddPhotoActivity extends BaseRefreshActivity implements View.OnClic
     private static final int TO_MODIFY_SORT = 0x002;
     public static final String PHOTO_BAG_ENTITY_DATA = "photo_bag_entity_data";
     public static final String MODEL_ENTITY_DATA = "model_entity_data";
+    public static final String SORT_ENTITY_DATA = "sort_entity_data";
 
     private List<String> mDatas = new ArrayList<>();
     private int mPageSize = 10;
@@ -56,6 +58,7 @@ public class AddPhotoActivity extends BaseRefreshActivity implements View.OnClic
     private List<LocalMedia> mImageSelectList = new ArrayList<>();
     private PhotoBagEntity mPhotoBagEntity;
     private ModelEntity mModelEntity;
+    private SortEntity mSortEntity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +80,7 @@ public class AddPhotoActivity extends BaseRefreshActivity implements View.OnClic
 
     private void initIntent(Intent intent) {
         mModelEntity = (ModelEntity) intent.getSerializableExtra(MODEL_ENTITY_DATA);
+        mSortEntity = (SortEntity) intent.getSerializableExtra(SORT_ENTITY_DATA);
         mPhotoBagEntity = (PhotoBagEntity) intent.getSerializableExtra(PHOTO_BAG_ENTITY_DATA);
         if (mModelEntity == null) {
             showMessage("找不到模特信息");
@@ -85,6 +89,11 @@ public class AddPhotoActivity extends BaseRefreshActivity implements View.OnClic
         }
         if (mPhotoBagEntity == null) {
             showMessage("找不到套图信息");
+            onBackPressed();
+            return;
+        }
+        if (mSortEntity == null) {
+            showMessage("找不到分类信息");
             onBackPressed();
             return;
         }
@@ -134,6 +143,7 @@ public class AddPhotoActivity extends BaseRefreshActivity implements View.OnClic
             PhotoDetailEntity photo = new PhotoDetailEntity();
             photo.setPhotoBag(mPhotoBagEntity);
             photo.setModel(mModelEntity);
+            photo.setSort(mSortEntity);
             photo.setPic(file);
             photoList.add(photo);
         }
@@ -174,10 +184,34 @@ public class AddPhotoActivity extends BaseRefreshActivity implements View.OnClic
             size += mPhotoBagEntity.getPhotoNum();
         }
         mPhotoBagEntity.setPhotoNum(size);
+//        photoBagEntity.increment("photoNum", size);
         setDialogMessage("正在修改套图数据...");
-        mPhotoBagEntity.save(new SaveListener<String>() {
+        int finalSize = size;
+        KLog.i(Constants.TAG, "PhotoBagEntity.getObjectId:" + mPhotoBagEntity.getObjectId());
+        mPhotoBagEntity.update(new UpdateListener() {
             @Override
-            public void done(String s, BmobException e) {
+            public void done(BmobException e) {
+                if (e == null) {
+                    modifySortNum(finalSize);
+                } else {
+                    BmobExceptionUtil.handler(e);
+                }
+            }
+        });
+    }
+
+    private void modifySortNum(int size) {
+        if (mSortEntity.getNum() != null) {
+            size += mSortEntity.getNum();
+        }
+//        SortEntity sortEntity = new SortEntity();
+//        sortEntity.increment("num", size);
+        mSortEntity.setNum(size);
+        setDialogMessage("正在修改分类数据...");
+        KLog.i(Constants.TAG, "SortEntity.getObjectId:" + mSortEntity.getObjectId());
+        mSortEntity.update(new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
                 closeDialog();
                 if (e == null) {
                     showMessage("添加成功");
@@ -333,6 +367,7 @@ public class AddPhotoActivity extends BaseRefreshActivity implements View.OnClic
                     // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true
                     // 如果裁剪并压缩了，以取压缩路径为准，因为是先裁剪后压缩的
                     if (mImageSelectList != null && mImageSelectList.size() > 0) {
+                        mDatas.clear();
                         for (LocalMedia media :
                                 mImageSelectList) {
                             KLog.i(Constants.TAG, media.getCompressPath());
