@@ -205,7 +205,7 @@ public class AddPhotoActivity extends BaseRefreshActivity implements View.OnClic
 //        mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
 //            @Override
 //            public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
-//                ImageTypeEntity entity = (ImageTypeEntity) adapter.getData().get(position);
+//                SortEntity entity = (SortEntity) adapter.getData().get(position);
 //                Intent intent = new Intent(mActivity, ModifySortActivity.class);
 //                intent.putExtra(ModifySortActivity.TYPE, ModifySortActivity.TYPE_MODIFY);
 //                intent.putExtra(ModifySortActivity.ENTITY_DATA, entity);

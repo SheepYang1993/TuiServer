@@ -40,7 +40,7 @@ import cn.bmob.v3.listener.UploadFileListener;
 import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseActivity;
 import me.sheepyang.tuiserver.app.Constants;
-import me.sheepyang.tuiserver.model.bmobentity.ImageTypeEntity;
+import me.sheepyang.tuiserver.model.bmobentity.SortEntity;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 import me.sheepyang.tuiserver.widget.QBar;
 
@@ -80,7 +80,7 @@ public class ModifySortActivity extends BaseActivity implements View.OnClickList
     private RequestOptions mOptions;
     private List<LocalMedia> mImageSelectList = new ArrayList<>();
     private String mType;
-    private ImageTypeEntity mSortEntity;
+    private SortEntity mSortEntity;
     private boolean mIsNeedDeleteBmobImage;
 
     @Override
@@ -103,7 +103,7 @@ public class ModifySortActivity extends BaseActivity implements View.OnClickList
             mType = TYPE_ADD;
         }
         if (TYPE_MODIFY.equals(mType)) {
-            mSortEntity = (ImageTypeEntity) intent.getSerializableExtra(ENTITY_DATA);
+            mSortEntity = (SortEntity) intent.getSerializableExtra(ENTITY_DATA);
             if (mSortEntity == null) {
                 showMessage("找不到分类信息");
                 onBackPressed();
@@ -221,7 +221,7 @@ public class ModifySortActivity extends BaseActivity implements View.OnClickList
         }
     }
 
-    private void modifySort(ImageTypeEntity entity) {
+    private void modifySort(SortEntity entity) {
         KLog.e();
         KeyboardUtils.hideSoftInput(mActivity);
         if (TextUtils.isEmpty(mEdtName.getText().toString())) {
@@ -257,7 +257,7 @@ public class ModifySortActivity extends BaseActivity implements View.OnClickList
         KLog.e();
         modifySortImage(entity, new OnModifySortImageListener() {
             @Override
-            public void onSuccess(ImageTypeEntity entity) {
+            public void onSuccess(SortEntity entity) {
                 KLog.e();
                 updateSortEntity(entity);
             }
@@ -271,7 +271,7 @@ public class ModifySortActivity extends BaseActivity implements View.OnClickList
         });
     }
 
-    private void deleteSortPic(ImageTypeEntity entity, UpdateListener listener) {
+    private void deleteSortPic(SortEntity entity, UpdateListener listener) {
         BmobFile file = new BmobFile();
         file.setUrl(entity.getPic().getUrl());//此url是上传文件成功之后通过bmobFile.getUrl()方法获取的。
         KLog.i(entity.getPic().getUrl());
@@ -280,7 +280,7 @@ public class ModifySortActivity extends BaseActivity implements View.OnClickList
         }
     }
 
-    private void updateSortEntity(ImageTypeEntity entity) {
+    private void updateSortEntity(SortEntity entity) {
         KLog.e();
         KLog.i(Constants.TAG
                 , "名称:" + entity.getName()
@@ -315,7 +315,7 @@ public class ModifySortActivity extends BaseActivity implements View.OnClickList
     }
 
 
-    private void modifySortImage(ImageTypeEntity entity, OnModifySortImageListener listener) {
+    private void modifySortImage(SortEntity entity, OnModifySortImageListener listener) {
         KLog.e();
         if (entity.getPic() == null || TextUtils.isEmpty(entity.getPic().getFileUrl())) {//服务器无图
             KLog.e();
@@ -426,7 +426,7 @@ public class ModifySortActivity extends BaseActivity implements View.OnClickList
     }
 
     private interface OnModifySortImageListener {
-        void onSuccess(ImageTypeEntity entity);
+        void onSuccess(SortEntity entity);
 
         void onError(BmobException e);
     }
@@ -441,7 +441,7 @@ public class ModifySortActivity extends BaseActivity implements View.OnClickList
             showMessage("请输入描述");
             return;
         }
-        ImageTypeEntity entity = new ImageTypeEntity();
+        SortEntity entity = new SortEntity();
         entity.setName(mEdtName.getText().toString());
         entity.setDesc(mEdtDesc.getText().toString());
 
@@ -512,7 +512,7 @@ public class ModifySortActivity extends BaseActivity implements View.OnClickList
         bmobFile.uploadblock(listener);
     }
 
-    private void saveSortEntity(ImageTypeEntity entity) {
+    private void saveSortEntity(SortEntity entity) {
         KLog.i(Constants.TAG
                 , "名称:" + entity.getName()
                 , "描述:" + entity.getDesc()

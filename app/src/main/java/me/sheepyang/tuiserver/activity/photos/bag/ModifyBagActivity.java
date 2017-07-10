@@ -4,13 +4,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.KeyboardUtils;
@@ -32,18 +36,20 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseActivity;
-import me.sheepyang.tuiserver.activity.photos.detail.AddPhotoActivity;
 import me.sheepyang.tuiserver.activity.photos.detail.PhotoDetailListActivity;
 import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.model.bmobentity.ModelEntity;
 import me.sheepyang.tuiserver.model.bmobentity.PhotoBagEntity;
+import me.sheepyang.tuiserver.model.bmobentity.SortEntity;
 import me.sheepyang.tuiserver.utils.AppUtil;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 import me.sheepyang.tuiserver.utils.DateUtil;
@@ -57,6 +63,7 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
     public static final String TYPE_ADD = "type_add";
     public static final String TYPE = "type";
     public static final String MODEL_ENTITY_DATA = "model_entity_data";
+    public static final String SORT_ENTITY_DATA = "sort_entity_data";
     public static final String ENTITY_DATA = "entity_data";
     private static final int TO_PHOTO_LIST = 0x001;
     private static final int TO_PHOTO_DETAIL = 0x002;
@@ -104,11 +111,20 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
     CheckBox mCbIsShow;
     @BindView(R.id.btn_all_photos)
     Button mBtnAllPhotos;
+    @BindView(R.id.spinner)
+    Spinner mSpinner;
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
     private List<LocalMedia> mImageSelectList = new ArrayList<>();
     private boolean mIsNeedDeleteBmobImage;
     private String mType;
     private ModelEntity mModelEntity;
     private PhotoBagEntity mPhotoBagEntity;
+    private List<String> mSoreData = new ArrayList<>();
+    private ArrayAdapter<String> mSoreAdapter;
+    private List<SortEntity> mSoreEntityList;
+    private int mSortSelectedPosition = -1;
+    private SortEntity mSortEntity;
 
     @Override
     public int setLayoutId() {
@@ -122,9 +138,16 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         initView();
         initListener();
         initData();
+        getSort();
     }
 
     private void initView() {
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+
+        mSoreData.add("暂无数据");
+        mSoreAdapter = new ArrayAdapter<String>(mActivity, R.layout.adapter_item_spinner, mSoreData);
+        mSpinner.setAdapter(mSoreAdapter);
+
         ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) mIvImage.getLayoutParams();
         lp.height = ScreenUtils.getScreenWidth();
         mIvImage.setLayoutParams(lp);
@@ -132,6 +155,7 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
 
     private void initIntent(Intent intent) {
         mModelEntity = (ModelEntity) intent.getSerializableExtra(MODEL_ENTITY_DATA);
+        mSortEntity = (SortEntity) intent.getSerializableExtra(SORT_ENTITY_DATA);
         if (mModelEntity == null) {
             showMessage("找不到模特信息");
             onBackPressed();
@@ -247,6 +271,24 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void initListener() {
+        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mSortSelectedPosition = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                KLog.i();
+                getSort();
+            }
+        });
 //        mIvImage.setOnLongClickListener((View v) -> {
 //            if (mImageSelectList != null && mImageSelectList.size() > 0) {
 //                String msg = "";
@@ -314,6 +356,42 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         }
     }
 
+    private void getSort() {
+        BmobQuery<SortEntity> query = new BmobQuery<SortEntity>();
+//        query.addWhereEqualTo("isShow", Boolean.TRUE);
+        //返回50条数据，如果不加上这条语句，默认返回10条数据
+//        query.setLimit(50);
+//        query.order("-updatedAt");
+//        query.order("-createdAt");
+        showDialog("加载分类中...");
+        //执行查询方法
+        query.findObjects(new FindListener<SortEntity>() {
+            @Override
+            public void done(List<SortEntity> list, BmobException e) {
+                mSwipeRefreshLayout.setRefreshing(false);
+                if (e == null) {
+                    mSoreEntityList = list;
+                    mSoreData.clear();
+                    int pos = -1;
+                    for (int i = 0; i < list.size(); i++) {
+                        if (mSortEntity != null && list.get(i).getName().equals(mSortEntity.getName())) {
+                            pos = i;
+                        }
+                        mSoreData.add(list.get(i).getName());
+                    }
+                    mSoreAdapter.notifyDataSetChanged();
+                    if (pos != -1) {
+                        mSpinner.setSelection(pos);
+                    }
+                    closeDialog();
+                } else {
+                    closeDialog();
+                    BmobExceptionUtil.handler(e);
+                }
+            }
+        });
+    }
+
     private void modifyPhotoBag(PhotoBagEntity entity) {
         KeyboardUtils.hideSoftInput(mActivity);
         String title = mEdtTitle.getText().toString();
@@ -363,6 +441,11 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         entity.setVip(mCbIsVip.isChecked());
         entity.setBlur(mCbIsBlur.isChecked());
         entity.setShow(mCbIsShow.isChecked());
+        if (mSoreEntityList != null && mSoreEntityList.size() > 0) {
+            if (mSortSelectedPosition != -1 && mSortSelectedPosition < mSoreEntityList.size()) {
+                entity.setSort(mSoreEntityList.get(mSortSelectedPosition));
+            }
+        }
 
         KLog.e();
         modifyPhotoBagImage(entity, new OnModifyPhotoBagImageListener() {
@@ -583,6 +666,11 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         entity.setVip(mCbIsVip.isChecked());
         entity.setBlur(mCbIsBlur.isChecked());
         entity.setShow(mCbIsShow.isChecked());
+        if (mSoreEntityList != null && mSoreEntityList.size() > 0) {
+            if (mSortSelectedPosition != -1 && mSortSelectedPosition < mSoreEntityList.size()) {
+                entity.setSort(mSoreEntityList.get(mSortSelectedPosition));
+            }
+        }
 
         // 例如 LocalMedia 里面返回三种path
         // 1.media.getPath(); 为原图path

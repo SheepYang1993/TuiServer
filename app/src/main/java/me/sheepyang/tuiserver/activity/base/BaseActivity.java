@@ -50,7 +50,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public void closeDialog() {
-        mDialog.close();
+        if (mDialog != null) {
+            mDialog.close();
+        }
     }
 
     @Override

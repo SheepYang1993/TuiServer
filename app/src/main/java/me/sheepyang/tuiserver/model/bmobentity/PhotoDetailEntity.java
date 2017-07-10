@@ -19,6 +19,7 @@ public class PhotoDetailEntity extends BmobObject implements Serializable {
     private Boolean isBlur;//是否模糊
     private Boolean isVip;//是否VIP
     private Boolean isShow;//是否展示
+    private SortEntity sort;//分类
 
     public BmobFile getPic() {
         return pic;
@@ -82,5 +83,13 @@ public class PhotoDetailEntity extends BmobObject implements Serializable {
 
     public void setShow(Boolean show) {
         isShow = show;
+    }
+
+    public SortEntity getSort() {
+        return sort;
+    }
+
+    public void setSort(SortEntity sort) {
+        this.sort = sort;
     }
 }

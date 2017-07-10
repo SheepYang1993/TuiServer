@@ -12,23 +12,23 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import java.util.List;
 
 import me.sheepyang.tuiserver.R;
-import me.sheepyang.tuiserver.model.bmobentity.ImageTypeEntity;
+import me.sheepyang.tuiserver.model.bmobentity.SortEntity;
 import me.sheepyang.tuiserver.utils.GlideApp;
 
 /**
  * Created by Administrator on 2017/7/1.
  */
 
-public class SortAdapter extends BaseQuickAdapter<ImageTypeEntity, BaseViewHolder> {
+public class SortAdapter extends BaseQuickAdapter<SortEntity, BaseViewHolder> {
     private int mScreenWidth;
 
-    public SortAdapter(@Nullable List<ImageTypeEntity> data) {
+    public SortAdapter(@Nullable List<SortEntity> data) {
         super(R.layout.adapter_item_sort, data);
         mScreenWidth = ScreenUtils.getScreenWidth();
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, ImageTypeEntity item) {
+    protected void convert(BaseViewHolder helper, SortEntity item) {
         ViewGroup.LayoutParams lp = helper.getView(R.id.iv_photo).getLayoutParams();
         lp.width = mScreenWidth / 2;
         lp.height = (int) (lp.width * 0.75);

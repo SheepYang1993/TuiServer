@@ -68,6 +68,7 @@ public class BagListActivity extends BaseRefreshActivity {
                 Intent intent = new Intent(mActivity, ModifyBagActivity.class);
                 intent.putExtra(ModifyBagActivity.TYPE, ModifyBagActivity.TYPE_MODIFY);
                 intent.putExtra(ModifyBagActivity.MODEL_ENTITY_DATA, mModelEntity);
+                intent.putExtra(ModifyBagActivity.SORT_ENTITY_DATA, entity.getSort());
                 intent.putExtra(ModifyBagActivity.ENTITY_DATA, entity);
                 startActivityForResult(intent, TO_MODIFY_PHOTO_BAG);
             }
@@ -157,7 +158,7 @@ public class BagListActivity extends BaseRefreshActivity {
     private void getPhotoBagList(int type, TwinklingRefreshLayout refreshLayout) {
         BmobQuery<PhotoBagEntity> query = new BmobQuery<PhotoBagEntity>();
         query.addWhereEqualTo("model", new BmobPointer(mModelEntity));
-        query.include("model");
+        query.include("model,sort");
         //返回50条数据，如果不加上这条语句，默认返回10条数据
         query.setLimit(mPageSize);
         switch (type) {

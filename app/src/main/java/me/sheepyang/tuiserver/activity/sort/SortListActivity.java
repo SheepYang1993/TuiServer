@@ -27,13 +27,13 @@ import me.sheepyang.tuiserver.R;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
 import me.sheepyang.tuiserver.adapter.SortAdapter;
 import me.sheepyang.tuiserver.app.Constants;
-import me.sheepyang.tuiserver.model.bmobentity.ImageTypeEntity;
+import me.sheepyang.tuiserver.model.bmobentity.SortEntity;
 import me.sheepyang.tuiserver.utils.BmobExceptionUtil;
 
 public class SortListActivity extends BaseRefreshActivity {
     private static final int TO_ADD_SORT = 0x001;
     private static final int TO_MODIFY_SORT = 0x002;
-    private List<ImageTypeEntity> mDatas = new ArrayList<>();
+    private List<SortEntity> mDatas = new ArrayList<>();
     private int mPageSize = 10;
     private int mCurrentPage = 0;
 
@@ -53,7 +53,7 @@ public class SortListActivity extends BaseRefreshActivity {
         mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
-                ImageTypeEntity entity = (ImageTypeEntity) adapter.getData().get(position);
+                SortEntity entity = (SortEntity) adapter.getData().get(position);
                 Intent intent = new Intent(mActivity, ModifySortActivity.class);
                 intent.putExtra(ModifySortActivity.TYPE, ModifySortActivity.TYPE_MODIFY);
                 intent.putExtra(ModifySortActivity.ENTITY_DATA, entity);
@@ -63,7 +63,7 @@ public class SortListActivity extends BaseRefreshActivity {
         mRecyclerView.addOnItemTouchListener(new OnItemLongClickListener() {
             @Override
             public void onSimpleItemLongClick(BaseQuickAdapter adapter, View view, int position) {
-                ImageTypeEntity entity = (ImageTypeEntity) adapter.getData().get(position);
+                SortEntity entity = (SortEntity) adapter.getData().get(position);
                 new AlertDialog.Builder(mActivity)
                         .setMessage("确定要删除 " + entity.getName() + " 这个分类吗？")
                         .setPositiveButton("删除", (DialogInterface dialog, int which) -> {
@@ -77,7 +77,7 @@ public class SortListActivity extends BaseRefreshActivity {
         });
     }
 
-    private void deleteSortPic(ImageTypeEntity entity) {
+    private void deleteSortPic(SortEntity entity) {
         BmobFile file = entity.getPic();
         if (entity.getPic() != null && !TextUtils.isEmpty(entity.getPic().getUrl())) {
             showDialog("正在删除封面...");
@@ -103,7 +103,7 @@ public class SortListActivity extends BaseRefreshActivity {
         deleteSortEntity(entity);
     }
 
-    private void deleteSortEntity(final ImageTypeEntity entity) {
+    private void deleteSortEntity(final SortEntity entity) {
         showDialog("正在删除分类...");
         entity.delete(new UpdateListener() {
 
@@ -144,7 +144,7 @@ public class SortListActivity extends BaseRefreshActivity {
     }
 
     private void getSortList(int type, TwinklingRefreshLayout refreshLayout) {
-        BmobQuery<ImageTypeEntity> query = new BmobQuery<ImageTypeEntity>();
+        BmobQuery<SortEntity> query = new BmobQuery<SortEntity>();
         //返回50条数据，如果不加上这条语句，默认返回10条数据
         query.setLimit(mPageSize);
         switch (type) {
@@ -156,10 +156,10 @@ public class SortListActivity extends BaseRefreshActivity {
 //        query.order("-updatedAt");
         query.order("-createdAt");
         //执行查询方法
-        query.findObjects(new FindListener<ImageTypeEntity>() {
+        query.findObjects(new FindListener<SortEntity>() {
 
             @Override
-            public void done(List<ImageTypeEntity> object, BmobException e) {
+            public void done(List<SortEntity> object, BmobException e) {
                 if (e == null) {
                     if (object != null && object.size() > 0) {
                         switch (type) {

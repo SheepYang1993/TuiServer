@@ -9,7 +9,7 @@ import cn.bmob.v3.datatype.BmobFile;
  * Created by Administrator on 2017/7/1.
  */
 
-public class ImageTypeEntity extends BmobObject implements Serializable {
+public class SortEntity extends BmobObject implements Serializable {
     private String name;//分类名称
     private String desc;//描述
     private Integer habit;//喜好 0全部；1男生；2女生

@@ -23,6 +23,7 @@ public class PhotoBagEntity extends BmobObject implements Serializable {
     private Boolean isVip;//是否VIP
     private Boolean isShow;//是否展示
     private BmobFile coverPic;//封面
+    private SortEntity sort;//分类
     private Integer photoNum;//套图照片数量
 
     public Integer getCollectedNum() {
@@ -127,5 +128,13 @@ public class PhotoBagEntity extends BmobObject implements Serializable {
 
     public void setModel(ModelEntity model) {
         this.model = model;
+    }
+
+    public SortEntity getSort() {
+        return sort;
+    }
+
+    public void setSort(SortEntity sort) {
+        this.sort = sort;
     }
 }
