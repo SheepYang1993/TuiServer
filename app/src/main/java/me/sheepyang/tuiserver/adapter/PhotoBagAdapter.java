@@ -59,7 +59,7 @@ public class PhotoBagAdapter extends BaseQuickAdapter<PhotoBagEntity, BaseViewHo
         helper.setText(R.id.tv_label, "#" + item.getLabel() + "#");
         helper.setText(R.id.tv_desc, item.getDesc());
         helper.setText(R.id.tv_image_num, item.getPhotoNum() + "");
-        helper.setText(R.id.tv_collection_num, (item.getCollectedBaseNum() + item.getCollectedNum()) + "");
+        helper.setText(R.id.tv_collection_num, (item.getCollectedBaseNum() + item.getCollectorIdList().size()) + "");
 
         if (item.getModel().getAvatar() != null && !TextUtils.isEmpty(item.getModel().getAvatar().getFileUrl())) {
             GlideApp.with(mContext)

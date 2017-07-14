@@ -252,7 +252,7 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
             mEdtLabel.setText(mPhotoBagEntity.getLabel());
             mEdtDesc.setText(mPhotoBagEntity.getDesc());
             mEdtSeeNum.setText(mPhotoBagEntity.getSeeNum() + "");
-            mEdtCollectNum.setText(mPhotoBagEntity.getCollectedNum() + "");
+            mEdtCollectNum.setText(mPhotoBagEntity.getCollectorIdList().size() + "");
             mEdtSeeBaseNum.setText(mPhotoBagEntity.getSeeBaseNum() + "");
             mEdtCollectBaseNum.setText(mPhotoBagEntity.getCollectedBaseNum() + "");
             mCbIsVip.setChecked(mPhotoBagEntity.getVip());
@@ -435,7 +435,6 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         entity.setLabel(label);
         entity.setSeeNum(Integer.valueOf(seeNum));
         entity.setSeeBaseNum(Integer.valueOf(seeBaseNum));
-        entity.setCollectedNum(Integer.valueOf(collectNum));
         entity.setCollectedBaseNum(Integer.valueOf(collectBaseNum));
         entity.setVip(mCbIsVip.isChecked());
         entity.setBlur(mCbIsBlur.isChecked());
@@ -659,7 +658,6 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         entity.setLabel(label);
         entity.setSeeNum(Integer.valueOf(seeNum));
         entity.setSeeBaseNum(Integer.valueOf(seeBaseNum));
-        entity.setCollectedNum(Integer.valueOf(collectNum));
         entity.setCollectedBaseNum(Integer.valueOf(collectBaseNum));
         entity.setPhotoNum(0);
         entity.setVip(mCbIsVip.isChecked());
@@ -722,7 +720,7 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
                 , "浏览基数:" + entity.getSeeBaseNum()
                 , "收藏基数:" + entity.getCollectedBaseNum()
                 , "浏览数:" + entity.getSeeNum()
-                , "收藏数:" + entity.getCollectedNum()
+                , "收藏数:" + entity.getCollectorIdList().size()
                 , "是否VIP:" + entity.getVip()
                 , "是否模糊:" + entity.getBlur()
                 , "是否展示:" + entity.getShow()
