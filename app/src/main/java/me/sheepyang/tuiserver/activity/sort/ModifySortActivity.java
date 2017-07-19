@@ -240,10 +240,10 @@ public class ModifySortActivity extends BaseActivity implements View.OnClickList
                 habit = 0;
                 break;
             case R.id.rbtn_habit_man://男生
-                habit = 1;
+                habit = 2;
                 break;
             case R.id.rbtn_habit_woman://女生
-                habit = 2;
+                habit = 1;
                 break;
             default:
                 habit = 0;//全部
@@ -451,10 +451,10 @@ public class ModifySortActivity extends BaseActivity implements View.OnClickList
                 habit = 0;
                 break;
             case R.id.rbtn_habit_man://男生
-                habit = 1;
+                habit = 2;
                 break;
             case R.id.rbtn_habit_woman://女生
-                habit = 2;
+                habit = 1;
                 break;
             default:
                 habit = 0;//全部
