@@ -16,6 +16,7 @@ public class PhotoBagEntity extends BmobObject implements Serializable {
     private ModelEntity model;//所属模特
     private String title;//标题
     private String desc;//描述
+    private Integer habit;//喜好 0全部；1男生；2女生
     private String label;//标签
     private Integer collectedBaseNum;//收藏基数
     private Integer seeBaseNum;//浏览基数
@@ -27,6 +28,14 @@ public class PhotoBagEntity extends BmobObject implements Serializable {
     private SortEntity sort;//分类
     private List<String> collectorIdList = new ArrayList<>();
     private Integer photoNum;//套图照片数量
+
+    public Integer getHabit() {
+        return habit;
+    }
+
+    public void setHabit(Integer habit) {
+        this.habit = habit;
+    }
 
     public List<String> getCollectorIdList() {
         return collectorIdList;

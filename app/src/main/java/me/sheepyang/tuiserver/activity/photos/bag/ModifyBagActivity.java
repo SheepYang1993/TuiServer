@@ -655,6 +655,11 @@ public class ModifyBagActivity extends BaseActivity implements View.OnClickListe
         entity.setModel(mModelEntity);
         entity.setTitle(title);
         entity.setDesc(desc);
+        if (mSortEntity != null) {
+            entity.setHabit(mSortEntity.getHabit());
+        } else {
+            entity.setHabit(0);
+        }
         entity.setLabel(label);
         entity.setSeeNum(Integer.valueOf(seeNum));
         entity.setSeeBaseNum(Integer.valueOf(seeBaseNum));
