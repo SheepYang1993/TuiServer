@@ -74,6 +74,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".activity.photos.detail.AddPhotoActivity">
         </activity>
+        <activity android:name=".activity.vip.VipInfoActivity">
+        </activity>
     </application>
 
 </manifest>

@@ -22,6 +22,7 @@ import me.sheepyang.tuiserver.activity.adv.AdvListActivity;
 import me.sheepyang.tuiserver.activity.base.BaseRefreshActivity;
 import me.sheepyang.tuiserver.activity.model.ModelListActivity;
 import me.sheepyang.tuiserver.activity.sort.SortListActivity;
+import me.sheepyang.tuiserver.activity.vip.VipInfoActivity;
 import me.sheepyang.tuiserver.adapter.SettingAdapter;
 import me.sheepyang.tuiserver.app.Constants;
 import me.sheepyang.tuiserver.model.entity.SettingEntity;
@@ -129,6 +130,7 @@ public class MainActivity extends BaseRefreshActivity {
         list.add(new SettingEntity("广告设置", AdvListActivity.class));
         list.add(new SettingEntity("分类设置", SortListActivity.class));
         list.add(new SettingEntity("模特列表", ModelListActivity.class));
+        list.add(new SettingEntity("VIP设置", VipInfoActivity.class));
         return list;
     }
 
